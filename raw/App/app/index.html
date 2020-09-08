@@ -1,0 +1,85 @@
+﻿<!DOCTYPE html>
+<html class=" ">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0">
+        <title>Beeblio </title>
+        <link rel="shorticon" href="assets/images/favicon.png">
+        <link href="assets/css/preloader.css" type="text/css" rel="stylesheet" media="screen,projection">
+        <link href="assets/css/materialize.min.css" type="text/css" rel="stylesheet" media="screen,projection">
+        <link href="assets/fonts/mdi/materialdesignicons.min.css" type="text/css" rel="stylesheet" media="screen,projection">
+        <link href="assets/plugins/perfect-scrollbar/perfect-scrollbar.css" type="text/css" rel="stylesheet" media="screen,projection">
+        <link href="assets/css/style.css" type="text/css" rel="stylesheet" media="screen,projection" id="main-style">
+    </head>
+    <body class="ishome  isfullscreen  html" data-header="light" data-footer="dark" data-header_align="center" data-menu_type="left" data-menu="light" data-menu_icons="on" data-footer_type="left" data-site_mode="light" data-footer_menu="show" data-footer_menu_style="light">
+        <div class="preloader-background">
+            <div class="preloader-wrapper">
+                <div id="preloader"></div>
+            </div>
+        </div>
+    <div class="fullfixed index-carousel">
+       <div class="carousel carousel-fullscreen carousel-slider">
+            <div class="carousel-item" href="#one!"><div class="bg" style="background-image: url('assets/images/ps1.jpg')"></div>
+        						<div class="item-content center-align white-text">
+        				              <div class="spacer-xlarge"></div>
+        				              <div class="spacer-xlarge"></div>
+        					          <h5>Welcome to Beeblio</h5>
+        					          <p class="light center-align white-text">
+                              The best place to get your vocabulary improve
+                              Beebl.io makes use of the most intelligent 
+                              dictionary in the world with an innovative research 
+                              game that allows you to easily learn new words.      
+                            </p>
+                				</div>
+            </div>
+            <div class="carousel-item" href="#two!"><div class="bg" style="background-image: url('assets/images/ps2.jpg')"></div>
+        					    <div class="item-content center-align white-text">
+        				              <div class="spacer-xlarge"></div>
+        				              <div class="spacer-xlarge"></div>
+        					          <h5>As your vocabulary <br/> grows, Beebl.io <br/>grows with you</h5>
+        						  </div>
+        	  </div>
+            <div class="carousel-item" href="#three!"><div class="bg" style="background-image: url('assets/images/ps3.jpg')"></div>
+        						<div class="item-content center-align white-text">
+        				              <div class="spacer-xlarge"></div>
+        				              <div class="spacer-xlarge"></div>
+        					          <h5>As your vocabulary <br/> grows, Beebl.io <br/>grows with you</h5>
+        						</div>
+            </div>
+      </div>    
+    </div> 
+
+	<div class="center index-start">
+		<a href="home.html" class='waves-light btn-large bg-primary'>Get Started</a>	
+  </div>
+<script src="assets/js/jquery-2.2.4.min.js"></script>
+<script src="assets/js/materialize.js"></script>
+<script src="assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script> 
+<script type="text/javascript">
+  $(document).ready(function(){
+
+      $(".carousel-fullscreen.carousel-slider").carousel({
+        fullWidth: true,
+        indicators: true,
+      }).css("height", $(window).height());
+      setTimeout(autoplay, 3500);
+      function autoplay() {
+          $(".carousel-fullscreen.carousel-slider").carousel("next");
+	      setTimeout(autoplay, 3500);
+      }
+
+  });   
+</script>
+<script src="assets/js/init.js"></script>
+<script src="assets/js/settings.js"></script>
+<script src="assets/js/scripts.js"></script>
+<script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function(){
+    $('.preloader-background').delay(10).fadeOut('slow');
+  });
+</script>
+</body>
+</html>
+
+
+
