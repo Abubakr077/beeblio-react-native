@@ -8,13 +8,13 @@ class SplashScreen extends React.Component {
 
 
   componentDidMount(){
-    
+
     const {user,navigation} = this.props;
 
     const {navigate} = navigation;
 
     let screen = (!user) ? "HomeScreen":"LoginScreen";
-    
+
     setTimeout(()=>{
       navigate(screen);
     }, 2000); // 2 sec
@@ -25,7 +25,7 @@ class SplashScreen extends React.Component {
     return (
       <View style={styles.container}>
         <Image
-          source={require('./../../../assets/logo.png')}
+          source={require('./../../../assets/image/logobig.png')}
         />
       </View>
     );

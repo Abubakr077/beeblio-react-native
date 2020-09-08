@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Image ,ImageBackground} from 'react-native';
 import { Icon, Drawer } from "native-base";
 import {DrawerItems} from 'react-navigation';
 
@@ -20,16 +20,20 @@ class HomeScreen extends React.Component {
             size={30}
             color='white'
             onPress={() => navigation.toggleDrawer()} />
-          
+
     </View>,
-       
-  
+
+
 })
   render() {
 
     return (
       <View style={styles.container}>
-        <Text>HomeScreen</Text>
+        <ImageBackground source={require('./../../../assets/image/wave.png')} style={styles.backgroundImage}>
+          <View style={styles.contents}>
+          <Text>HomeScreen</Text>
+          </View>
+        </ImageBackground>
       </View>
     );
   }
@@ -38,9 +42,16 @@ class HomeScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
+    flexDirection: "column"
+  },
+  backgroundImage: {
+    flex: 1,
+    resizeMode: 'cover', // or 'stretch'
     justifyContent: 'center',
+  },
+  contents: {
+    justifyContent: 'center',
+    alignContent:'center'
   },
 
 });
