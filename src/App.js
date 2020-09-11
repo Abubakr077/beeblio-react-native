@@ -6,10 +6,12 @@ import LoginScreen from "./Components/Screens/Auth/LoginScreen";
 import RegisterScreen from "./Components/Screens/Auth/RegisterScreen";
 import { StyleSheet, Text, View,Image } from 'react-native';
 import {Icon} from "native-base";
+import * as NavigationService from './NavigationService';
+
 import { createStackNavigator, createSwitchNavigator, createAppContainer,createDrawerNavigator,DrawerItems } from "react-navigation";
 
 const DrawerContent = (props) => (
-  
+
   <View>
     <View
       style={{
@@ -23,7 +25,7 @@ const DrawerContent = (props) => (
        style={{width: 40, height: 40}} />
     </View>
     <DrawerItems {...props} />
-    
+
   </View>
 )
 
@@ -57,7 +59,9 @@ const AppNavigator = createSwitchNavigator(
 const AppContainer = createAppContainer(AppNavigator);
 
 export default class App extends React.Component {
- 
+    componentDidMount() {
+        NavigationService.setNavigator(this.navigator);
+    }
   render() {
     return <AppContainer/>;
   }

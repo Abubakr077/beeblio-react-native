@@ -1,4 +1,5 @@
 import * as actions from "../Actions/type";
+import { AsyncStorage } from 'react-native';
 
 const initSate = {
     user: null,
@@ -8,23 +9,27 @@ const AuthReducer = (state = initSate, action) => {
 
     switch (action.type) {
 
-        case actions.LOGIN: {
-
-            let user = { ...action.payload.user };
-
-            user.auth = {
-                ...action.payload.auth,
-                accessToken: action.payload.access_token
+        case actions.SET_USER: {
+            const { user } = action.payload;
+            const {user:oldUser} =  state;
+            const newUser = {
+                ...oldUser,
+                ...user
             };
-
-            //localStorage.mpsetUser = JSON.stringify(user);
+            AsyncStorage.setItem('user', JSON.stringify(newUser));
             return {
                 ...state,
-                user
+                user:newUser,
             };
         }
-
-
+        case actions.LOGIN: {
+            const { user } = action.payload;
+            AsyncStorage.setItem('user', JSON.stringify(user));
+            return {
+                ...state,
+                user,
+            };
+        }
         case actions.LOGOUT: {
             //localStorage.mpsetUser = null;
             return {

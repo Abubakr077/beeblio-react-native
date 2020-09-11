@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Applet",
-    "slug": "Applet",
+    "name": "Beeblio",
+    "slug": "Beeblio",
     "privacy": "public",
     "platforms": [
       "ios",
