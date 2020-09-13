@@ -36,6 +36,7 @@ const register = options => async dispatch => {
       onSuccess(message);
     }
   } catch (error) {
+    console.error(error);
     const { data } = error.response;
     const message = data.message || error.message || fallBackErrorMessage;
 
