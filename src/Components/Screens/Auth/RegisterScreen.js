@@ -157,19 +157,6 @@ class RegisterScreen extends React.Component {
                             <Text style={styles.errorMessage}>{this.state.firstNameError}</Text>
 
 
-                            <View style={styles.searchSection1}>
-                                <View style={{ flex: .3, alignItems: "center" }}>
-                                    <Image source={require('./../../../../assets/image/email.png')}
-                                        style={styles.TextInput_img}>
-                                    </Image>
-                                </View>
-                                <View style={{ flex: 2 }}>
-                                    <InputField
-                                        placeholder="Screen Name"
-                                        onChangeText={screenName => this.setState({ screenName })}
-                                    />
-                                </View>
-                            </View>
                             <Text style={styles.errorMessage}>{this.state.screenNameError}</Text>
 
                             <View style={styles.searchSection1}>
@@ -196,7 +183,7 @@ class RegisterScreen extends React.Component {
 
                                 <View style={{ flex: .3, alignItems: "center" }}>
 
-                                    <Image source={require('./../../../../assets/image/email.png')}
+                                    <Image source={require('./../../../../assets/image/password.png')}
                                         style={styles.TextInput_img}>
 
                                     </Image>
@@ -217,7 +204,7 @@ class RegisterScreen extends React.Component {
 
                                 <View style={{ flex: .3, alignItems: "center" }}>
 
-                                    <Image source={require('./../../../../assets/image/email.png')}
+                                    <Image source={require('./../../../../assets/image/password.png')}
                                         style={styles.TextInput_img}>
 
                                     </Image>

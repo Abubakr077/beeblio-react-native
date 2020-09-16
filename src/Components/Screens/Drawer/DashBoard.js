@@ -29,6 +29,9 @@ const chartConfig = {
     useShadowColorFromDataset: false // optional
 };
 
+
+
+
 class DashBoard extends React.Component {
     static navigationOptions = ({ navigation }) => ({
         drawerIcon: ({ tintColor }) => (

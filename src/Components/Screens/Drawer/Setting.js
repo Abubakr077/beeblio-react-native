@@ -93,13 +93,13 @@ class Setting extends React.Component {
 
                       <TouchableOpacity>
 
-                        <Image source={require('./../../../../assets/image/02.png')} style={{ width: 35, height: 35, resizeMode: "cover" }} />
+                        <Image source={require('./../../../../assets/image/like.png')} style={{ width: 20, height: 20, resizeMode: "cover" }} />
                        
                       </TouchableOpacity>
 
                       <TouchableOpacity>
 
-                       <Image source={require('./../../../../assets/image/02.png')} style={{ width: 35, height: 35, resizeMode: "cover",}} />
+                       <Image source={require('./../../../../assets/image/dislike.png')} style={{ width: 20, height: 20, resizeMode: "cover", marginLeft:5}} />
 
                       </TouchableOpacity>
 
@@ -154,13 +154,13 @@ class Setting extends React.Component {
 
                       <TouchableOpacity>
 
-                        <Image source={require('./../../../../assets/image/02.png')} style={{ width: 35, height: 35, resizeMode: "cover" }} />
+                        <Image source={require('./../../../../assets/image/like.png')} style={{ width: 20, height: 20, resizeMode: "cover" }} />
                        
                       </TouchableOpacity>
 
                       <TouchableOpacity>
 
-                       <Image source={require('./../../../../assets/image/02.png')} style={{ width: 35, height: 35, resizeMode: "cover",}} />
+                       <Image source={require('./../../../../assets/image/dislike.png')} style={{ width: 20, height: 20, marginLeft:5 , resizeMode: "cover",}} />
 
                       </TouchableOpacity>
 
