@@ -64,7 +64,7 @@ class Collection extends React.Component {
                 <View style={{ justifyContent: "center", alignItems: "center" }}>
 
                   <View style={{ marginTop: 15, justifyContent: "center", alignItems: "center" }}>
-                    <Image source={require('./../../../../assets/image/02.png')} style={{ width: 45, height: 45, resizeMode: "cover" }} />
+                    <Image source={require('./../../../../assets/image/i1.png')} style={{ width: 45, height: 45, resizeMode: "cover" }} />
                   </View>
 
                   <View style={{ marginVertical: 20 }}>
@@ -86,7 +86,7 @@ class Collection extends React.Component {
                 <View style={{ justifyContent: "center", alignItems: "center" }}>
 
                   <View style={{ marginTop: 15, justifyContent: "center", alignItems: "center" }}>
-                    <Image source={require('./../../../../assets/image/02.png')} style={{ width: 45, height: 45, resizeMode: "cover" }} />
+                    <Image source={require('./../../../../assets/image/i2.png')} style={{ width: 45, height: 45, resizeMode: "cover" }} />
                   </View>
 
                   <View style={{ marginVertical: 20 }}>
@@ -108,7 +108,7 @@ class Collection extends React.Component {
                 <View style={{ justifyContent: "center", alignItems: "center" }}>
 
                   <View style={{ marginTop: 15, justifyContent: "center", alignItems: "center" }}>
-                    <Image source={require('./../../../../assets/image/02.png')} style={{ width: 45, height: 45, resizeMode: "cover" }} />
+                    <Image source={require('./../../../../assets/image/i3.png')} style={{ width: 45, height: 45, resizeMode: "cover" }} />
                   </View>
 
                   <View style={{ marginVertical: 20 }}>
@@ -130,7 +130,7 @@ class Collection extends React.Component {
                 <View style={{ justifyContent: "center", alignItems: "center" }}>
 
                   <View style={{ marginTop: 15, justifyContent: "center", alignItems: "center" }}>
-                    <Image source={require('./../../../../assets/image/02.png')} style={{ width: 45, height: 45, resizeMode: "cover" }} />
+                    <Image source={require('./../../../../assets/image/i4.png')} style={{ width: 45, height: 45, resizeMode: "cover" }} />
                   </View>
 
                   <View style={{ marginVertical: 20 }}>
