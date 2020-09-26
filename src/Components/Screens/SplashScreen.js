@@ -2,22 +2,33 @@ import React from 'react';
 
 import { connect } from "react-redux";
 
-import { StyleSheet, Text, View,Image } from 'react-native';
+import {StyleSheet, Text, View, Image, AsyncStorage} from 'react-native';
+import * as actions from '../../Store/Actions/AuthActions';
+import * as NavigationService from '../../NavigationService'
 
 class SplashScreen extends React.Component {
 
 
   componentDidMount(){
 
-    const {user,navigation} = this.props;
+    AsyncStorage.getItem('initial', (err, result) => {
+      if (result){
+        const { syncWithAsyncStorage } = this.props;
 
-    const {navigate} = navigation;
-
-    let screen = (!user) ? "HomeScreen":"LoginScreen";
-
-    setTimeout(()=>{
-      navigate(screen);
-    }, 2000); // 2 sec
+        syncWithAsyncStorage({
+          onSuccess: ({user, skiped}) => {
+            if(user !== undefined){
+              let screen = (user || skiped === 'true') ? "HomeScreen" : "MainLogin";
+              setTimeout(() => {
+                NavigationService.navigate(screen);
+              }, 1000);
+            }
+          }
+        });
+      } else {
+        NavigationService.navigate('InitialScreen');
+      }
+    });
 
   }
 
@@ -44,11 +55,12 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => {
   return {
-    user: state.AuthReducer.user
+    user: state.AuthReducer.user,
+    skiped: state.AuthReducer.skiped,
   };
 };
 
 export default connect(
   mapStateToProps,
-  null
+    { syncWithAsyncStorage: actions.syncWithAsyncStorage }
 )(SplashScreen);

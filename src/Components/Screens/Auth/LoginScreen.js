@@ -5,9 +5,10 @@ import {
 } from 'react-native';
 import { Item, Input, Icon } from 'native-base';
 import { LinearGradient } from 'expo-linear-gradient';
-
+import * as NavigationService from '../../../NavigationService';
 import InputField from '../../SeperateComponents/InputField'
-import Input_field from '../../SeperateComponents/InputField'
+import {connect} from "react-redux";
+import * as actions from "../../../Store/Actions/AuthActions";
 class LoginScreen extends React.Component {
     static navigationOptions = ({ navigation }) => ({
         drawerIcon: ({ tintColor }) => (
@@ -21,19 +22,50 @@ class LoginScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            email_address: 'j'
+            email: '',
+            password:''
         };
     }
 
-    _signIn = () => {
-        //   alert(this.state.email_address);
-    }
-    navigatee = () => {
-     this.props.navigation.navigate("RegisterScreen")
+    moveToHome = () => {
+        NavigationService.navigateAndResetStack("HomeScreen");
+    };
+    toggleSubmitting = () => {
+        const {submitting} = this.state;
+        this.setState({
+            submitting: !submitting,
+        });
+    };
+    login = () => {
+        const { login } = this.props;
 
+        const { email, password } = this.state;
+        if (!email) {
+            return alert('Email is required.');
+        }
+        if (!password) {
+            return alert('Password is required.');
+        }
+
+        this.toggleSubmitting();
+
+        login({
+            data: { email, password },
+            onSuccess: () => {
+                this.moveToHome();
+            },
+            onError: (message) => {
+                alert(message);
+                this.toggleSubmitting();
+            }
+        });
     }
 
     render() {
+        const {
+            submitting
+        } = this.state;
+
         return (
 
             <View style={styles.container}>
@@ -57,13 +89,11 @@ class LoginScreen extends React.Component {
 
 
                             <View style={{ flex: 2, }}>
-                                <Input_field
+                                <InputField
                                     placeholder="Email Address"
-                                    onChangeText={(email_address) => {
-                                        this.setState({ email_address });
+                                    onChangeText={(email) => {
+                                        this.setState({ email });
                                     }} />
-
-
                             </View>
 
 
@@ -78,39 +108,51 @@ class LoginScreen extends React.Component {
                             </View>
 
                             <View style={{ flex: 2, }}>
-                                <Input_field
+                                <InputField
                                     placeholder="Password"
-                                    onChangeText={(email_address) => {
-                                        this.setState({ email_address });
+                                    onChangeText={(password) => {
+                                        this.setState({ password });
                                     }} />
-
-
                             </View>
                         </View>
 
                         <TouchableOpacity
-                            onPress={this._signIn}
+                            disabled={submitting}
+                            onPress={this.login}
                             style={{ marginTop: 10 }}>
                             <LinearGradient
                                 start={{ x: 0, y: 0 }}
                                 end={{ x: 1, y: 0 }}
-                                colors={['#256B9B', '#3FB0F1', '#256B9B']}
+                                colors={submitting ? ['#666666', '#666666'] : ['#256B9B', '#3FB0F1', '#256B9B']}
                                 style={styles.linearGradient}>
-                                <Text style={styles.buttonText}>LOGIN</Text>
+                                <Text style={styles.buttonText}>
+                                    {submitting ? 'Please wait...' : 'LOGIN'}
+                                </Text>
                             </LinearGradient>
                         </TouchableOpacity>
 
 
 
-                        <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                        <View style={{ flexDirection: 'row' }}>
+
                             <TouchableOpacity
-                            onPress={this.navigatee}
+                            onPress={ ()=>{
+                                NavigationService.navigateAndResetStack("RegisterScreen")
+                            }
+                            }
                              >
                                 <Text
-                                    style={{ color: '#3FB0F1', fontWeight: 'bold', fontSize: 18 }}>
-                                    Not Registered? Signup
+                                    style={{ color: '#3FB0F1', fontWeight: 'bold', fontSize: 18,marginLeft: 20 }}>
+                                    Signup
                             </Text>
                             </TouchableOpacity>
+
+                            <TouchableOpacity
+                                onPress={ ()=>{
+                                    NavigationService.navigateAndResetStack("ForgotPassword")
+                                }
+                                }
+                            >
                             <Text
                                 style={{
                                     color: '#3FB0F1',
@@ -118,8 +160,10 @@ class LoginScreen extends React.Component {
                                     fontWeight: 'bold',
                                     fontSize: 18,
                                 }}>
-                                Forget Password?
+                                Forgot Password?
                         </Text>
+                            </TouchableOpacity>
+
                         </View>
 
                         <View
@@ -129,7 +173,7 @@ class LoginScreen extends React.Component {
                                 marginTop: 20,
                             }}>
                             <Image
-                                source={require('./../../../../assets/image/f.png')}
+                                source={require('./../../../../assets/image/social/g.png')}
                                 style={{
                                     width: 45,
                                     height: 45,
@@ -139,7 +183,7 @@ class LoginScreen extends React.Component {
                             />
 
                             <Image
-                                source={require('./../../../../assets/image/i.png')}
+                                source={require('./../../../../assets/image/social/f.png')}
                                 style={{
                                     width: 45,
                                     height: 45,
@@ -149,7 +193,7 @@ class LoginScreen extends React.Component {
                             />
 
                             <Image
-                                source={require('./../../../../assets/image/t.png')}
+                                source={require('./../../../../assets/image/social/a.png')}
                                 style={{
                                     width: 45,
                                     height: 45,
@@ -159,7 +203,7 @@ class LoginScreen extends React.Component {
                             />
 
                             <Image
-                                source={require('./../../../../assets/image/s.png')}
+                                source={require('./../../../../assets/image/social/t.png')}
                                 style={{
                                     width: 45,
                                     height: 45,
@@ -257,4 +301,9 @@ const styles = StyleSheet.create({
     },
 });
 
-export default LoginScreen
+export default connect(
+    null,
+    {
+        login: actions.login
+    }
+)(LoginScreen);

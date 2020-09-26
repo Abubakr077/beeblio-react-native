@@ -1,6 +1,6 @@
-import { Icon } from 'native-base';
-import { connect } from "react-redux";
-import React, { Component } from 'react';
+import {Icon} from 'native-base';
+import {connect} from "react-redux";
+import React, {Component} from 'react';
 import {
     StyleSheet,
     Text,
@@ -12,14 +12,14 @@ import {
     ScrollView
 
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import {LinearGradient} from 'expo-linear-gradient';
 import InputField from '../../SeperateComponents/InputField'
 import * as actions from '../../../Store/Actions/AuthActions';
 import * as NavigationService from '../../../NavigationService';
 
 class RegisterScreen extends React.Component {
-    static navigationOptions = ({ navigation }) => ({
-        drawerIcon: ({ tintColor }) => (
+    static navigationOptions = ({navigation}) => ({
+        drawerIcon: ({tintColor}) => (
             <Icon
                 name="home"
                 size={30}
@@ -45,8 +45,11 @@ class RegisterScreen extends React.Component {
         };
     }
 
+    moveToLogin = () => {
+        NavigationService.navigateAndResetStack('LoginScreen');
+    };
     toggleSubmitting = () => {
-        const { submitting } = this.state;
+        const {submitting} = this.state;
         this.setState({
             submitting: !submitting,
         });
@@ -59,9 +62,9 @@ class RegisterScreen extends React.Component {
             passwordError: '',
             screenNameError: ''
         });
-        const { register } = this.props;
+        const {register} = this.props;
 
-        const { firstName, email, password, confirmPassword, screenName } = this.state;
+        const {firstName, email, password, confirmPassword, screenName} = this.state;
 
         if (firstName.length < 5 || firstName.length > 50) {
             console.log('Name must be greater than 5 and less than 50.');
@@ -95,9 +98,10 @@ class RegisterScreen extends React.Component {
         }
         this.toggleSubmitting();
         register({
-            data: { email, screenName, password, firstName },
-            onSuccess: () => {
-                NavigationService.navigateAndResetStack("LoginScreen");
+            data: {email, screenName, password, firstName},
+            onSuccess: (response) => {
+                alert(response);
+                this.moveToLogin();
             },
             onError: message => {
                 alert(message);
@@ -131,46 +135,63 @@ class RegisterScreen extends React.Component {
 
                     style={styles.image}>
 
-                    <View style={{ flex: .65, justifyContent: "flex-end" }}>
+                    <View style={{flex: .65, justifyContent: "flex-end"}}>
 
                         <Image
                             source={require('./../../../../assets/image/logo.png')}
                             style={styles.logo}>
                         </Image>
                     </View>
-                    <View style={{ flex: .3 }}></View>
-                    <View style={{ flex: 2 }}>
-                        <ScrollView>
+                    <View style={{flex: .3}}></View>
+                    <View style={{flex: 2,marginBottom: 15}}>
+                        <ScrollView
+                            style={{height:'100%', width:'100%'}}
+                        >
                             <View style={styles.searchSection}>
-                                <View style={{ flex: .3, alignItems: "center" }}>
-                                    <Image source={require('./../../../../assets/image/email.png')}
-                                        style={styles.TextInput_img}>
+                                <View style={{flex: .3, alignItems: "center"}}>
+                                    <Image source={require('./../../../../assets/image/user_input.png')}
+                                           style={styles.TextInput_img}>
                                     </Image>
                                 </View>
-                                <View style={{ flex: 2 }}>
+                                <View style={{flex: 2}}>
                                     <InputField
                                         placeholder="First Name"
-                                        onChangeText={firstName => this.setState({ firstName })}
+                                        onChangeText={firstName => this.setState({firstName})}
                                     />
                                 </View>
                             </View>
                             <Text style={styles.errorMessage}>{this.state.firstNameError}</Text>
 
 
+
+                            <View style={styles.searchSection1}>
+                                <View style={{flex: .3, alignItems: "center"}}>
+                                    <Image source={require('./../../../../assets/image/user_input.png')}
+                                           style={styles.TextInput_img}>
+                                    </Image>
+                                </View>
+                                <View style={{flex: 2}}>
+                                    <InputField
+                                        placeholder="Screen Name"
+                                        onChangeText={screenName => this.setState({screenName})}
+                                    />
+                                </View>
+                            </View>
+
                             <Text style={styles.errorMessage}>{this.state.screenNameError}</Text>
 
                             <View style={styles.searchSection1}>
-                                <View style={{ flex: .3, alignItems: "center" }}>
+                                <View style={{flex: .3, alignItems: "center"}}>
                                     <Image source={require('./../../../../assets/image/email.png')}
-                                        style={styles.TextInput_img}>
+                                           style={styles.TextInput_img}>
 
                                     </Image>
                                 </View>
 
-                                <View style={{ flex: 2 }}>
+                                <View style={{flex: 2}}>
                                     <InputField
                                         placeholder="Email"
-                                        onChangeText={email => this.setState({ email })}
+                                        onChangeText={email => this.setState({email})}
                                     />
                                 </View>
 
@@ -181,17 +202,17 @@ class RegisterScreen extends React.Component {
 
                             <View style={styles.searchSection1}>
 
-                                <View style={{ flex: .3, alignItems: "center" }}>
+                                <View style={{flex: .3, alignItems: "center"}}>
 
                                     <Image source={require('./../../../../assets/image/password.png')}
-                                        style={styles.TextInput_img}>
+                                           style={styles.TextInput_img}>
 
                                     </Image>
                                 </View>
-                                <View style={{ flex: 2 }}>
+                                <View style={{flex: 2}}>
                                     <InputField
                                         placeholder="Password"
-                                        onChangeText={password => this.setState({ password })}
+                                        onChangeText={password => this.setState({password})}
                                     />
                                 </View>
 
@@ -202,91 +223,76 @@ class RegisterScreen extends React.Component {
 
                             <View style={styles.searchSection1}>
 
-                                <View style={{ flex: .3, alignItems: "center" }}>
+                                <View style={{flex: .3, alignItems: "center"}}>
 
                                     <Image source={require('./../../../../assets/image/password.png')}
-                                        style={styles.TextInput_img}>
-
+                                           style={styles.TextInput_img}>
                                     </Image>
                                 </View>
 
 
-                                <View style={{ flex: 2 }}>
+                                <View style={{flex: 2}}>
                                     <InputField
                                         placeholder="Confirm Password"
-                                        onChangeText={confirmPassword => this.setState({ confirmPassword })}
+                                        onChangeText={confirmPassword => this.setState({confirmPassword})}
                                     />
                                 </View>
 
 
                             </View>
-                        <Text style={styles.errorMessage}>{this.state.confirmPasswordError}</Text>
+                            <Text style={styles.errorMessage}>{this.state.confirmPasswordError}</Text>
 
                             <TouchableOpacity
                                 disabled={submitting}
                                 onPress={this.handleSignup}
-                                style={{ marginTop: 10 }}
+                                style={{marginTop: 10}}
                             >
-                                <LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
-                                    colors={submitting ? ['#666666', '#666666'] : ['#256B9B', '#3FB0F1', '#256B9B']}
-                                    style={styles.linearGradient}>
+                                <LinearGradient start={{x: 0, y: 0}} end={{x: 1, y: 0}}
+                                                colors={submitting ? ['#666666', '#666666'] : ['#256B9B', '#3FB0F1', '#256B9B']}
+                                                style={styles.linearGradient}>
                                     <Text style={styles.buttonText}>
                                         {submitting ? 'Please wait...' : 'REGISTER'}
                                     </Text>
                                 </LinearGradient>
                             </TouchableOpacity>
-
-
-                            <View style={{ flexDirection: "row", marginLeft: 20 }}>
+                            <View style={{flexDirection: "row", marginLeft: 20}}>
                                 <TouchableOpacity
+                                    onPress={this.moveToLogin}
                                 >
-                                    <Text style={{ color: "#3FB0F1", fontWeight: "bold", fontSize: 18 }}>Already
+                                    <Text style={{color: "#3FB0F1", fontWeight: "bold", fontSize: 18}}>Already
                                         Registered? Login</Text>
 
                                 </TouchableOpacity>
-
-
                             </View>
+                            <View style={{flexDirection: "row", justifyContent: "center", marginTop: 20}}>
 
+                                <Image source={require('./../../../../assets/image/social/g.png')}
 
-                            <View style={{ flexDirection: "row", justifyContent: "center", marginTop: 20 }}>
+                                       style={styles.social_img}>
 
-                                <Image source={require('./../../../../assets/image/f.png')}
+                                </Image>
+
+                                <Image
+                                    source={require('./../../../../assets/image/social/f.png')}
 
                                     style={styles.social_img}>
 
                                 </Image>
 
                                 <Image
-                                    source={require('./../../../../assets/image/i.png')}
+                                    source={require('./../../../../assets/image/social/a.png')}
 
                                     style={styles.social_img}>
-
                                 </Image>
-
                                 <Image
-                                    source={require('./../../../../assets/image/t.png')}
-
+                                    source={require('./../../../../assets/image/social/t.png')}
                                     style={styles.social_img}>
-
                                 </Image>
-
-                                <Image
-                                    source={require('./../../../../assets/image/s.png')}
-
-                                    style={styles.social_img}>
-
-                                </Image>
-
                             </View>
-
                             <Text style={styles.back}>Go Back</Text>
-
                         </ScrollView>
-
                     </View>
-
-
+                    <View style={{flex: .1}}/>
                 </ImageBackground>
 
 
@@ -322,7 +328,7 @@ const styles = StyleSheet.create({
         borderRadius: 35,
         backgroundColor: "#3FB0F1",
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
+        shadowOffset: {width: 0, height: 1},
         shadowOpacity: 0.8,
         shadowRadius: 3,
         elevation: 15
@@ -337,7 +343,7 @@ const styles = StyleSheet.create({
         borderRadius: 35,
         backgroundColor: "#3FB0F1",
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
+        shadowOffset: {width: 0, height: 1},
         shadowOpacity: 0.8,
         shadowRadius: 3,
         elevation: 15
@@ -378,7 +384,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         paddingLeft: 20,
     }
-
 });
 
 export default connect(

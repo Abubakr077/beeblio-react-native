@@ -1,13 +1,20 @@
+
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, Image, ImageBackground, Dimensions } from 'react-native';
 import { Icon, Drawer } from "native-base";
 import { DrawerItems } from 'react-navigation';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 
+
 import DashBoard from './Drawer/DashBoard';
 import Search from './Drawer/Search';
 import Setting from './Drawer/Setting';
 import Collection from './Drawer/Collection';
+import {connect} from "react-redux";
+import * as actions from '../../Store/Actions/AuthActions';
+import * as NavigationService from '../../NavigationService'
+import {LOGOUT} from "../../Store/Actions/type";
+
 
 const LazyPlaceholder = ({ route }) => (
   <View>
@@ -40,12 +47,10 @@ class HomeScreen extends React.Component {
           color='white'
           onPress={() => navigation.toggleDrawer()} />
 
-      </View>,
-   
+            </View>,
 
 
-
-  })
+    })
 
   constructor(props) {
     super(props);
@@ -124,7 +129,7 @@ class HomeScreen extends React.Component {
                 backgroundColor: "#fff",
                 height: 2,
               }}
-              style={{ backgroundColor: "#9f9f9f", width: '100%' }}
+              style={{ backgroundColor: "#fff", width: '100%' }}
               // scrollEnabled={true}
               renderIcon={({ route, focused, color }) => (
                 <View style={{ paddingTop: route.key === 'fifth' ? 8 : 0 }}>{route.icon}</View>
@@ -150,21 +155,20 @@ class HomeScreen extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: "column"
-  },
-  backgroundImage: {
-    flex: 1,
-    resizeMode: 'cover', // or 'stretch'
-    justifyContent: 'center',
-  },
-  contents: {
-    justifyContent: 'center',
-    alignContent: 'center'
-  },
+    container: {
+        flex: 1,
+        flexDirection: "column"
+    },
+    backgroundImage: {
+        flex: 1,
+        resizeMode: 'cover', // or 'stretch'
+        justifyContent: 'center',
+    },
+    contents: {
+        justifyContent: 'center',
+        alignContent: 'center'
+    },
 
 });
-
 
 export default HomeScreen

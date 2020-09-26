@@ -1,4 +1,4 @@
 class APIModel {
-   static HOST = "http://capi-test.beebl.io/";
+   static HOST = "https://capi-test.beebl.io";
 }
 export default APIModel;

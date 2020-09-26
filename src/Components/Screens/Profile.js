@@ -103,8 +103,15 @@ class Profile extends React.Component {
                         <View style={{ flexDirection: "row",  flex:1 , marginBottom:50}}>
 
                             <TextInput
-                                placeholder="John"
-                                style={{ borderBottomColor: "#000", borderBottomWidth: .5, width: "80%", marginTop: "10%",  flex:1, marginLeft: 25, }}></TextInput>
+    placeholder="John"
+    style={{
+        borderBottomColor: "#000",
+        borderBottomWidth: .5,
+        width: "80%",
+        marginTop: "10%",
+        flex: 1,
+        marginLeft: 25,
+    }}/>
 
 
                             <TouchableOpacity style={{ flex:.2, alignSelf:"flex-end" }}>
@@ -120,8 +127,15 @@ class Profile extends React.Component {
                         <View style={{ flexDirection: "row",  flex:1 , marginBottom:50}}>
 
                             <TextInput
-                                placeholder="Doe"
-                                style={{ borderBottomColor: "#000", borderBottomWidth: .5, width: "80%", marginTop: "10%",  flex:1, marginLeft: 25, }}></TextInput>
+    placeholder="Doe"
+    style={{
+        borderBottomColor: "#000",
+        borderBottomWidth: .5,
+        width: "80%",
+        marginTop: "10%",
+        flex: 1,
+        marginLeft: 25,
+    }}/>
 
 
                             <TouchableOpacity style={{ flex:.2, alignSelf:"flex-end" }}>
@@ -137,8 +151,15 @@ class Profile extends React.Component {
                         <View style={{ flexDirection: "row",  flex:1, marginBottom:50 }}>
 
                             <TextInput
-                                placeholder="Johndoe@gmail.com"
-                                style={{ borderBottomColor: "#000", borderBottomWidth: .5, width: "80%", marginTop: "10%",  flex:1, marginLeft: 25, }}></TextInput>
+    placeholder="Johndoe@gmail.com"
+    style={{
+        borderBottomColor: "#000",
+        borderBottomWidth: .5,
+        width: "80%",
+        marginTop: "10%",
+        flex: 1,
+        marginLeft: 25,
+    }}/>
 
 
                             <TouchableOpacity style={{ flex:.2, alignSelf:"flex-end" }}>
@@ -154,8 +175,15 @@ class Profile extends React.Component {
                         <View style={{ flexDirection: "row",  flex:1, marginBottom:50 }}>
 
                             <TextInput
-                                placeholder="********"
-                                style={{ borderBottomColor: "#000", borderBottomWidth: .5, width: "80%", marginTop: "10%",  flex:1, marginLeft: 25, }}></TextInput>
+    placeholder="********"
+    style={{
+        borderBottomColor: "#000",
+        borderBottomWidth: .5,
+        width: "80%",
+        marginTop: "10%",
+        flex: 1,
+        marginLeft: 25,
+    }}/>
 
 
                             <TouchableOpacity style={{ flex:.2, alignSelf:"flex-end" }}>
@@ -166,7 +194,7 @@ class Profile extends React.Component {
 
                         </View>
 
-                  
+
 
 
                     </View>

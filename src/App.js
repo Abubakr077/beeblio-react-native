@@ -8,14 +8,41 @@ import DashBoard from './Components/Screens/Drawer/DashBoard';
 import LoginScreen from "./Components/Screens/Auth/LoginScreen";
 import MainLogin from "./Components/Screens/Auth/MainLogin";
 import RegisterScreen from "./Components/Screens/Auth/RegisterScreen";
-import { StyleSheet, Text, View, Image } from 'react-native';
+import {StyleSheet, Text, View, Image, AsyncStorage} from 'react-native';
 import { Icon } from "native-base";
 import * as NavigationService from './NavigationService';
 
-import { createStackNavigator, createSwitchNavigator, createAppContainer, createDrawerNavigator, DrawerItems } from "react-navigation";
 
+import { createStackNavigator, createSwitchNavigator, createAppContainer,createDrawerNavigator,DrawerItems } from "react-navigation";
+import ForgotPassword from "./Components/Screens/Auth/ForgotPassword";
+
+import {connect} from "react-redux";
+import * as actions from "./Store/Actions/AuthActions";
+import {logout} from "./Store/Actions/AuthActions";
+
+const logoutUser = async () => {
+
+
+    try {
+            const keys = await AsyncStorage.getAllKeys();
+            await AsyncStorage.multiRemove(keys);
+        } catch (error) {
+            console.error('Error clearing app data.');
+        }
+    NavigationService.navigate('MainLogin')
+
+    // props.dispatch(logout({
+    //     token: props.user,
+    //     onError: (error) => {
+    //         console.log({error});
+    //         NavigationService.navigateAndResetStack('MainLogin')
+    //     },
+    //     onSuccess: () => {
+    //         NavigationService.navigateAndResetStack('MainLogin')
+    //     }
+    // }))
+};
 const DrawerContent = (props) => (
-
   <View>
     <View
       style={{
@@ -23,7 +50,7 @@ const DrawerContent = (props) => (
         height: 340,
         // alignItems: 'center',
         // justifyContent: 'center',
-      
+
       }}
     >
       <View style={{marginTop:35}}>
@@ -32,7 +59,7 @@ const DrawerContent = (props) => (
         <Image source={require('../assets/image/prof.png')}
           style={{ width: 50, height: 50, borderRadius: 100 }} />
           <View style={{marginLeft:12}} >
-          
+
         <Text style={{fontSize:18, color:"#fff", marginLeft: 5}}>JHON DOE</Text>
 
         <View style={{backgroundColor:"#fff", borderRadius:35, marginTop:5}}>
@@ -102,64 +129,76 @@ const DrawerContent = (props) => (
 </View>
 
       </View>
-      
-
-        
       </View>
-      
-
-
-
     </View>
-    <DrawerItems {...props} />
+      <DrawerItems
+          {...props}
+          onItemPress={(route) => {
+              if (route.route.routeName !== 'logout') {
+                  props.onItemPress(route);
+                  return;
+              }
+              logoutUser();
 
+          }}/>
   </View>
 )
-
-
 
 const appStackNavigator = createStackNavigator({ HomeScreen }, {
   navigationOptions:
   {
-    title: 'Lobby',
-    drawerIcon: ({ tintColor }) => (
+    title: 'Lobby', drawerIcon: ({ tintColor }) => (
       <Icon
         name="home"
         size={30}
         color='white'
       />
-    ),
+    )
   },
+
 })
 
-
-const appDrawerNavigator = createDrawerNavigator({ 
-  Home: appStackNavigator, 
-  Login: LoginScreen, 
+const appDrawerNavigator = createDrawerNavigator({
+  Home: appStackNavigator,
+  Login: LoginScreen,
   Register: RegisterScreen ,
-  main: DashBoard}, {
+  initial: InitialScreen,
+    logout: 'LogoutScreen'
+}, {
   contentComponent: DrawerContent,
 })
 
 const AppNavigator = createSwitchNavigator(
   {
+      SplashScreen,
     HomeScreen: appDrawerNavigator,
     Profile,
     MainLogin,
-    SplashScreen,
     InitialScreen,
     LoginScreen,
     RegisterScreen,
+      ForgotPassword
   }
 );
 
 const AppContainer = createAppContainer(AppNavigator);
 
-export default class App extends React.Component {
-  componentDidMount() {
-    NavigationService.setNavigator(this.navigator);
-  }
-  render() {
-    return <AppContainer />;
-  }
+class App extends React.Component {
+    componentDidMount() {
+        NavigationService.setNavigator(this.navigator);
+
+    }
+    render() {
+        return <AppContainer ref={navigatorRef => {
+            this.navigator = navigatorRef;
+        }} />;
+    }
 }
+
+export default connect(
+    null,
+    {
+        logout: actions.logout
+    }
+)(App);
+

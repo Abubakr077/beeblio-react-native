@@ -23,15 +23,18 @@ function goBack() {
 }
 
 function navigateAndResetStack(routeName, params) {
+
   if (config.navigator && routeName) {
     let action = NavigationActions.navigate({ routeName, params });
+    config.navigator.dispatch(action)
+    // config.navigator.dispatch(
+    //   StackActions.reset({
+    //     index: 0,
+    //     key: undefined,
+    //     actions: [action],
+    //   }),
+    // );
 
-    config.navigator.dispatch(
-      StackActions.reset({
-        index: 0,
-        actions: [action],
-      }),
-    );
   }
 }
 
