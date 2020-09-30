@@ -147,7 +147,7 @@ const DrawerContent = (props) => (
 const appStackNavigator = createStackNavigator({ HomeScreen }, {
   navigationOptions:
   {
-    title: 'Lobby', drawerIcon: ({ tintColor }) => (
+    title: 'Home', drawerIcon: ({ tintColor }) => (
       <Icon
         name="home"
         size={30}
@@ -160,9 +160,11 @@ const appStackNavigator = createStackNavigator({ HomeScreen }, {
 
 const appDrawerNavigator = createDrawerNavigator({
   Home: appStackNavigator,
-  Login: LoginScreen,
-  Register: RegisterScreen ,
-  initial: InitialScreen,
+  'My Profile': Profile,
+  'My Collection': Profile,
+  'My Searches': Profile,
+  'Invite Friends': Profile,
+  'Settings': Profile,
     logout: 'LogoutScreen'
 }, {
   contentComponent: DrawerContent,

@@ -34,21 +34,20 @@ const getStatistics = options => async dispatch => {
   }
 };
 const getWordChart = options => async dispatch => {
-  const { type, onSuccess, onError } = options;
+  const { onSuccess, onError } = options;
   try {
-
-    const { data: res } = await axios.get(`${APIModel.HOST}/curated-contents?curatedContentType=${type}&page=0&offset=0&limit=20&fields=id,type,url,contentType,contentHash,curatedContentType,mainGenres,subGenres,name,summary,country,sourceLink,contentLink,referenceImageLink,publicationDate,establishmentDate,rssFeeds,isbn,authors,publisher,serialNb,rate,isPremium`, {
+    const token = await AsyncStorage.getItem('user')
+    const { data: res } = await axios.get(`${APIModel.HOST}/user/word-chart`, {
       'headers': {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'authorization':token
       }
     });
-
     dispatch({
-      type: actions.GET_CONTENT,
-      payload: res.content
+      type: actions.GET_USER_WORD_GRAPH,
+      payload: res[0]
     });
-
     if (onSuccess) {
       onSuccess();
     }
@@ -62,4 +61,32 @@ const getWordChart = options => async dispatch => {
     }
   }
 };
-export { getStatistics,getWordChart};
+const getUser = options => async dispatch => {
+  const { onSuccess, onError } = options;
+  try {
+    const token = await AsyncStorage.getItem('user')
+    const { data: res } = await axios.get(`${APIModel.HOST}/user/me`, {
+      'headers': {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'authorization':token
+      }
+    });
+    dispatch({
+      type: actions.GET_USER,
+      payload: res
+    });
+    if (onSuccess) {
+      onSuccess();
+    }
+  } catch (error) {
+    console.log(error);
+    const { data } = error.response;
+    const message = data.message || error.message || fallBackErrorMessage;
+
+    if (onError) {
+      onError(message);
+    }
+  }
+};
+export { getStatistics,getWordChart,getUser};

@@ -11,7 +11,7 @@ import Search from './Drawer/Search';
 import Setting from './Drawer/Setting';
 import Collection from './Drawer/Collection';
 import {connect} from "react-redux";
-import * as actions from '../../Store/Actions/AuthActions';
+import * as actions from '../../Store/Actions/UserActions';
 import * as NavigationService from '../../NavigationService'
 import {LOGOUT} from "../../Store/Actions/type";
 
@@ -54,7 +54,22 @@ class HomeScreen extends React.Component {
 
   constructor(props) {
     super(props);
+    this.updateUser();
   }
+    updateUser = () => {
+        const {getUser} = this.props;
+        this.setState({isLoadingContent: true});
+        getUser({
+            onError: (error) => {
+                alert(error);
+                this.setState({isLoadingContent: false, progress: 0});
+            },
+            onSuccess: () => {
+                this.setState({isLoadingContent: false, isReady: true});
+            }
+        });
+
+    }
   state = {
     index: 2,
     routes: [
@@ -170,5 +185,15 @@ const styles = StyleSheet.create({
     },
 
 });
+const mapStateToProps = state => {
+    return {
+        user: state.UserReducer.user,
+    };
+};
 
-export default HomeScreen
+export default connect(
+    mapStateToProps,
+    {
+        getUser: actions.getUser,
+    },
+)(HomeScreen);

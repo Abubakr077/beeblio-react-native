@@ -1,32 +1,34 @@
 import React from 'react';
-import {StyleSheet, Text, View, Image, ImageBackground, Dimensions, ScrollView, SafeAreaView} from 'react-native';
+import {
+    StyleSheet,
+    Text,
+    View,
+    Image,
+    ImageBackground,
+    Dimensions,
+    ScrollView,
+    SafeAreaView,
+    AsyncStorage
+} from 'react-native';
 import {Icon, Drawer} from "native-base";
 import {DrawerItems} from 'react-navigation';
 import {LinearGradient} from 'expo-linear-gradient';
 import * as Progress from 'react-native-progress';
-import {BarChart} from "react-native-chart-kit";
+import {BarChart,LineChart} from "react-native-chart-kit";
 import {connect} from "react-redux";
 import * as actions from "../../../Store/Actions/UserActions";
 
 const screenWidth = Dimensions.get("window").width;
+const monthNames = ["","January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+];
 
-const data = {
-    labels: ["January"],
-    datasets: [
-        {
-            data: [20, 45, 28, 80, 99, 43],
-            color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`, // optional
-            strokeWidth: 2 // optional
-        }
-    ],
-    legend: ["Rainy Days"] // optional
-};
 const chartConfig = {
     backgroundGradientFrom: "#1E2923",
     backgroundGradientFromOpacity: 0,
     backgroundGradientTo: "#ffffff",
     // backgroundGradientToOpacity: 0.5,
-    color: () => `rgba(26, 255, 146)`,
+    color: () => `rgb(28, 163, 220)`,
     strokeWidth: 2, // optional, default 3
     barPercentage: 0.5,
     useShadowColorFromDataset: false // optional
@@ -59,11 +61,20 @@ class DashBoard extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            statics: ''
+            statics: '',
+            isReady: false,
+            user: null
         };
+        this.data = null;
+        AsyncStorage.getItem('user_obj').then((user)=>{
+            this.setState({
+                user:JSON.parse(user)
+            })
+        })
     }
     componentDidMount() {
         this.updateStatics();
+        this.updateChart();
     }
     updateStatics = () => {
         const {getStatistics} = this.props;
@@ -77,7 +88,37 @@ class DashBoard extends React.Component {
             },
             onSuccess: () => {
                 this.setState({isLoadingContent: false, progress: 0});
-                console.log('statics123',this.state.statics);
+            }
+        });
+
+    }
+    updateChart = () => {
+        const {getWordChart} = this.props;
+
+        this.setState({isLoadingContent: true});
+        getWordChart({
+            onError: (error) => {
+                alert(error);
+                this.setState({isLoadingContent: false, progress: 0});
+
+            },
+            onSuccess: () => {
+                let array = ['0'];
+                const chart  = this.state.chart;
+                array.push(chart.wordFiltered.toString());
+                array.push(chart.wordCollected.toString());
+                this.data = {
+                    labels: ["","Words Searched","Words Collected"],
+                    datasets: [
+                        {
+                            data: array,
+                            color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`,
+                            strokeWidth: 2
+                        }
+                    ],
+                    legend: [monthNames[chart.monthValue]]
+                };
+                this.setState({isLoadingContent: false, isReady: true});
             }
         });
 
@@ -86,17 +127,22 @@ class DashBoard extends React.Component {
         if (nextProps.statics !== this.state.statics) {
             this.setState({ statics: nextProps.statics });
         }
+        if (nextProps.chart !== this.state.chart) {
+            this.setState({ chart: nextProps.chart });
+        }
     }
 
     render() {
 
         const {
-            statics
+            statics,
+            isReady,
+            chart,
+            user
         } = this.state;
         return (
             <SafeAreaView style={styles.container}>
                 <ScrollView contentContainerStyle={{flexGrow: 1}}>
-
 
                     <ImageBackground source={require('./../../../../assets/image/wave.png')}
                                      style={styles.backgroundImage}>
@@ -107,14 +153,14 @@ class DashBoard extends React.Component {
                             fontWeight: 'bold',
                             textAlign: "center",
                             marginTop: 17
-                        }}>JOHN DOE</Text>
+                        }}>{user?user.apiUserProfile.firstName:'bakrafzal0332@gmail.com'}</Text>
                         <Text style={{
                             fontSize: 27,
                             color: "black",
                             fontWeight: 'bold',
                             textAlign: "center",
                             marginTop: 15
-                        }}>1050</Text>
+                        }}>{chart?chart.wordCollected:0}</Text>
 
                         <View style={{backgroundColor: "#0F0B41", borderRadius: 10, marginTop: 15}}>
 
@@ -260,13 +306,13 @@ class DashBoard extends React.Component {
                         }}>CONTENT SEARCHED THIS MONTH</Text>
 
 
-                        <BarChart
-                            data={data}
+                        {isReady ?<LineChart
+                            style={{width: "80%"}}
+                            data={this.data}
                             width={screenWidth}
                             height={220}
-                            yAxisLabel="$"
                             chartConfig={chartConfig}
-                        />
+                        />:<View/>}
 
                         <View style={{
                             flexDirection: "row",
@@ -425,6 +471,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => {
     return {
         statics: state.UserReducer.statics,
+        chart: state.UserReducer.chart,
     };
 };
 
@@ -432,5 +479,6 @@ export default connect(
     mapStateToProps,
     {
         getStatistics: actions.getStatistics,
+        getWordChart: actions.getWordChart,
     },
 )(DashBoard);
