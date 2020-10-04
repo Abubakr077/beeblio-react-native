@@ -14,12 +14,12 @@ import {Icon, Drawer} from "native-base";
 import {DrawerItems} from 'react-navigation';
 import {LinearGradient} from 'expo-linear-gradient';
 import * as Progress from 'react-native-progress';
-import {BarChart,LineChart} from "react-native-chart-kit";
+import {BarChart, LineChart} from "react-native-chart-kit";
 import {connect} from "react-redux";
 import * as actions from "../../../Store/Actions/UserActions";
 
 const screenWidth = Dimensions.get("window").width;
-const monthNames = ["","January", "February", "March", "April", "May", "June",
+const monthNames = ["", "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
 ];
 
@@ -66,16 +66,18 @@ class DashBoard extends React.Component {
             user: null
         };
         this.data = null;
-        AsyncStorage.getItem('user_obj').then((user)=>{
+        AsyncStorage.getItem('user_obj').then((user) => {
             this.setState({
-                user:JSON.parse(user)
+                user: JSON.parse(user)
             })
         })
     }
+
     componentDidMount() {
         this.updateStatics();
         this.updateChart();
     }
+
     updateStatics = () => {
         const {getStatistics} = this.props;
 
@@ -104,11 +106,11 @@ class DashBoard extends React.Component {
             },
             onSuccess: () => {
                 let array = ['0'];
-                const chart  = this.state.chart;
+                const chart = this.state.chart;
                 array.push(chart.wordFiltered.toString());
                 array.push(chart.wordCollected.toString());
                 this.data = {
-                    labels: ["","Words Searched","Words Collected"],
+                    labels: ["", "Words Searched", "Words Collected"],
                     datasets: [
                         {
                             data: array,
@@ -123,12 +125,13 @@ class DashBoard extends React.Component {
         });
 
     }
+
     componentWillReceiveProps(nextProps, nextContext) {
         if (nextProps.statics !== this.state.statics) {
-            this.setState({ statics: nextProps.statics });
+            this.setState({statics: nextProps.statics});
         }
         if (nextProps.chart !== this.state.chart) {
-            this.setState({ chart: nextProps.chart });
+            this.setState({chart: nextProps.chart});
         }
     }
 
@@ -146,21 +149,20 @@ class DashBoard extends React.Component {
 
                     <ImageBackground source={require('./../../../../assets/image/wave.png')}
                                      style={styles.backgroundImage}>
-
-                        <Text style={{
+                        {user ? <Text style={{
                             fontSize: 22,
                             color: "black",
                             fontWeight: 'bold',
                             textAlign: "center",
                             marginTop: 17
-                        }}>{user?user.apiUserProfile.firstName:'bakrafzal0332@gmail.com'}</Text>
+                        }}>{user.apiUserProfile.firstName}</Text> : <View/>}
                         <Text style={{
                             fontSize: 27,
                             color: "black",
                             fontWeight: 'bold',
                             textAlign: "center",
                             marginTop: 15
-                        }}>{chart?chart.wordCollected:0}</Text>
+                        }}>{chart ? chart.wordCollected : 0}</Text>
 
                         <View style={{backgroundColor: "#0F0B41", borderRadius: 10, marginTop: 15}}>
 
@@ -176,7 +178,7 @@ class DashBoard extends React.Component {
 
                         </View>
 
-                         <View style={{
+                        <View style={{
                             flexDirection: "row",
                             justifyContent: "center",
                             alignItems: "center",
@@ -212,7 +214,7 @@ class DashBoard extends React.Component {
                                                 color: "white",
                                                 fontWeight: 'bold',
                                                 textAlign: "center"
-                                            }}>{statics.totalWordCollected?statics.totalWordCollected:0}</Text>
+                                            }}>{statics.totalWordCollected ? statics.totalWordCollected : 0}</Text>
                                             <Text style={{
                                                 fontSize: 16,
                                                 color: "white",
@@ -224,7 +226,7 @@ class DashBoard extends React.Component {
                                         </View>
                                     </View>
 
-                                    <View style={{marginTop: 20,width: "80%"}}>
+                                    <View style={{marginTop: 20, width: "80%"}}>
                                         <Progress.Bar progress={0.7}
                                                       width={150}
                                                       color="#71BF71"
@@ -263,7 +265,7 @@ class DashBoard extends React.Component {
                                                 color: "white",
                                                 fontWeight: 'bold',
                                                 textAlign: "center"
-                                            }}>{statics.totalUrlSearched?statics.totalUrlSearched:0}</Text>
+                                            }}>{statics.totalUrlSearched ? statics.totalUrlSearched : 0}</Text>
                                             <Text style={{
                                                 fontSize: 16,
                                                 color: "white",
@@ -275,7 +277,7 @@ class DashBoard extends React.Component {
                                         </View>
                                     </View>
 
-                                    <View style={{marginTop: 20,width: "100%"}}>
+                                    <View style={{marginTop: 20, width: "100%"}}>
                                         <Progress.Bar progress={0.7}
                                                       width={150}
                                                       color="#FFE92E"
@@ -306,13 +308,13 @@ class DashBoard extends React.Component {
                         }}>CONTENT SEARCHED THIS MONTH</Text>
 
 
-                        {isReady ?<LineChart
+                        {isReady ? <LineChart
                             style={{width: "80%"}}
                             data={this.data}
                             width={screenWidth}
                             height={220}
                             chartConfig={chartConfig}
-                        />:<View/>}
+                        /> : <View/>}
 
                         <View style={{
                             flexDirection: "row",

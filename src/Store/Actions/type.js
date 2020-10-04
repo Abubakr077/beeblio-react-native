@@ -8,3 +8,4 @@ export const GET_CONTENT_RSS = 'GET_CONTENT_RSS';
 export const GET_USER_STATISTICS = 'GET_USER_STATISTICS';
 export const GET_USER_WORD_GRAPH = 'GET_USER_WORD_GRAPH';
 export const GET_USER = 'GET_USER';
+export const GET_USER_IMAGE = 'GET_USER_IMAGE';

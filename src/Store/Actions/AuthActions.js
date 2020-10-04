@@ -153,7 +153,10 @@ const getFilteredContent = options => async dispatch => {
 
     const { data: res } = await axios.post(`${APIModel.HOST}/filter`, formData,{
       'headers': {
-        'Content-Type': 'multipart/mixed'
+        'Content-Type': 'multipart/mixed',
+        "processData": false,
+        "contentType": false,
+        "mimeType": "multipart/form-data",
       }
     });
     console.log('check here');

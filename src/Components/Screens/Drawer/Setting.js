@@ -34,12 +34,12 @@ class Setting extends React.Component {
   static navigationOptions = ({ navigation }) => ({
     drawerIcon: ({ tintColor }) => (
       <Icon
-        name="home"
+        name="setting"
         size={30}
         color='white'
       />
     ),
-    headerTitle: "Home",
+    headerTitle: "Settings",
     headerLeft:
       <View style={{ paddingLeft: 16 }}>
         <Icon
@@ -94,7 +94,7 @@ class Setting extends React.Component {
                       <TouchableOpacity>
 
                         <Image source={require('./../../../../assets/image/like.png')} style={{ width: 20, height: 20, resizeMode: "cover" }} />
-                       
+
                       </TouchableOpacity>
 
                       <TouchableOpacity>
@@ -155,7 +155,7 @@ class Setting extends React.Component {
                       <TouchableOpacity>
 
                         <Image source={require('./../../../../assets/image/like.png')} style={{ width: 20, height: 20, resizeMode: "cover" }} />
-                       
+
                       </TouchableOpacity>
 
                       <TouchableOpacity>

@@ -89,4 +89,32 @@ const getUser = options => async dispatch => {
     }
   }
 };
-export { getStatistics,getWordChart,getUser};
+const getUserPicture = options => async dispatch => {
+  const { onSuccess, onError } = options;
+  try {
+    const token = await AsyncStorage.getItem('user')
+    const { data: res } = await axios.get(`${APIModel.HOST}/user/image`, {
+      'headers': {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'authorization':token
+      }
+    });
+    dispatch({
+      type: actions.GET_USER_IMAGE,
+      payload: res[0]
+    });
+    if (onSuccess) {
+      onSuccess();
+    }
+  } catch (error) {
+    console.log(error);
+    const { data } = error.response;
+    const message = data.message || error.message || fallBackErrorMessage;
+
+    if (onError) {
+      onError(message);
+    }
+  }
+};
+export { getStatistics,getWordChart,getUser,getUserPicture};

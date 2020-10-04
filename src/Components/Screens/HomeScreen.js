@@ -26,17 +26,12 @@ class HomeScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
     drawerIcon: ({ tintColor }) => (
       <View>
-
         <Icon
           name="home"
           size={30}
           color='white'
         />
-
-
-
       </View>
-
     ),
     headerTitle: "Home",
     headerLeft:
@@ -46,10 +41,7 @@ class HomeScreen extends React.Component {
           size={30}
           color='white'
           onPress={() => navigation.toggleDrawer()} />
-
-            </View>,
-
-
+      </View>,
     })
 
   constructor(props) {
@@ -57,9 +49,18 @@ class HomeScreen extends React.Component {
     this.updateUser();
   }
     updateUser = () => {
-        const {getUser} = this.props;
+        const {getUser,getUserPicture} = this.props;
         this.setState({isLoadingContent: true});
         getUser({
+            onError: (error) => {
+                alert(error);
+                this.setState({isLoadingContent: false, progress: 0});
+            },
+            onSuccess: () => {
+                this.setState({isLoadingContent: false, isReady: true});
+            }
+        });
+        getUserPicture({
             onError: (error) => {
                 alert(error);
                 this.setState({isLoadingContent: false, progress: 0});
@@ -195,5 +196,6 @@ export default connect(
     mapStateToProps,
     {
         getUser: actions.getUser,
+        getUserPicture: actions.getUserPicture,
     },
 )(HomeScreen);

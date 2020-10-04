@@ -103,7 +103,7 @@ class Search extends React.Component {
 
             </View>
 
-            <Text style={{ fontSize: 20, fontWeight: "bold", marginTop: 15, alignSelf: "center", marginTop: 15, marginHorizontal: 15, marginBottom: 20 }}>{'RESULT'}</Text>
+            <Text style={{ fontSize: 20, fontWeight: "bold", marginTop: 15, alignSelf: "center",marginHorizontal: 15, marginBottom: 20 }}>{'RESULT'}</Text>
 
             {/* <FlatList
           // data={this.state.users}
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
 
   },
   backgroundImage: {
-    // flex: 1.5,  
+    // flex: 1.5,
     resizeMode: "center"
     // or 'stretch'
     // justifyContent: 'center',

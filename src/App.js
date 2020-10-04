@@ -2,6 +2,9 @@ import React from 'react';
 import SplashScreen from "./Components/Screens/SplashScreen";
 import HomeScreen from "./Components/Screens/HomeScreen";
 import Profile from "./Components/Screens/Profile";
+import Collection from "./Components/Screens/Drawer/Collection";
+import Search from "./Components/Screens/Drawer/Search";
+import Settings from "./Components/Screens/Drawer/Setting";
 import InitialScreen from "./Components/Screens/InitialScreen";
 import DashBoard from './Components/Screens/Drawer/DashBoard';
 
@@ -18,6 +21,7 @@ import ForgotPassword from "./Components/Screens/Auth/ForgotPassword";
 
 import {connect} from "react-redux";
 import * as actions from "./Store/Actions/AuthActions";
+import * as actionsUsers from "./Store/Actions/UserActions";
 import {logout} from "./Store/Actions/AuthActions";
 
 const logoutUser = async () => {
@@ -143,7 +147,6 @@ const DrawerContent = (props) => (
           }}/>
   </View>
 )
-
 const appStackNavigator = createStackNavigator({ HomeScreen }, {
   navigationOptions:
   {
@@ -155,16 +158,58 @@ const appStackNavigator = createStackNavigator({ HomeScreen }, {
       />
     )
   },
-
 })
-
+const appStackProfile = createStackNavigator({ Profile }, {
+    navigationOptions:
+        {
+            title: 'Profile', drawerIcon: ({ tintColor }) => (
+                <Image style={{
+                    height: 20,
+                    width: 20,
+                }} source={require('../assets/image/icon-user.png')} />
+            )
+        },
+})
+const appStackCollection = createStackNavigator({ Collection }, {
+    navigationOptions:
+        {
+            title: 'Collections', drawerIcon: ({ tintColor }) => (
+                <Image style={{
+                    height: 20,
+                    width: 20,
+                }} source={require('../assets/image/collection.png')} />
+            )
+        },
+})
+const appStackSearch = createStackNavigator({ Search }, {
+    navigationOptions:
+        {
+            title: 'Searches', drawerIcon: ({ tintColor }) => (
+                <Image style={{
+                    height: 20,
+                    width: 20,
+                }} source={require('../assets/image/searchh.png')} />
+            )
+        },
+})
+const appStackSettings = createStackNavigator({ Settings }, {
+    navigationOptions:
+        {
+            title: 'Settings', drawerIcon: ({ tintColor }) => (
+                <Image style={{
+                    height: 20,
+                    width: 20,
+                }} source={require('../assets/image/gear.png')} />
+            )
+        },
+})
 const appDrawerNavigator = createDrawerNavigator({
   Home: appStackNavigator,
-  'My Profile': Profile,
-  'My Collection': Profile,
-  'My Searches': Profile,
-  'Invite Friends': Profile,
-  'Settings': Profile,
+  'My Profile': appStackProfile,
+  'My Collection': appStackCollection,
+  'My Searches': appStackSearch,
+  // 'Invite Friends': Profile,
+  'Settings': appStackSettings,
     logout: 'LogoutScreen'
 }, {
   contentComponent: DrawerContent,
@@ -188,6 +233,29 @@ const AppContainer = createAppContainer(AppNavigator);
 class App extends React.Component {
     componentDidMount() {
         NavigationService.setNavigator(this.navigator);
+        this.updateUser();
+    }
+    updateUser = () => {
+        const {getUser,getUserPicture} = this.props;
+        this.setState({isLoadingContent: true});
+        getUser({
+            onError: (error) => {
+                alert(error);
+                this.setState({isLoadingContent: false, progress: 0});
+            },
+            onSuccess: () => {
+                this.setState({isLoadingContent: false, isReady: true});
+            }
+        });
+        getUserPicture({
+            onError: (error) => {
+                alert(error);
+                this.setState({isLoadingContent: false, progress: 0});
+            },
+            onSuccess: () => {
+                this.setState({isLoadingContent: false, isReady: true});
+            }
+        });
 
     }
     render() {
@@ -200,7 +268,9 @@ class App extends React.Component {
 export default connect(
     null,
     {
-        logout: actions.logout
+        logout: actions.logout,
+        getUser: actionsUsers.getUser,
+        getUserPicture: actionsUsers.getUserPicture,
     }
 )(App);
 

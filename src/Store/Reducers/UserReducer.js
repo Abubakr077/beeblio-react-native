@@ -5,6 +5,7 @@ const initSate = {
     statics: undefined,
     chart: undefined,
     user: undefined,
+    userImage: undefined,
 };
 
 const UserReducer = (state = initSate, action) => {
@@ -33,6 +34,14 @@ const UserReducer = (state = initSate, action) => {
             return {
                 ...state,
                 user:user,
+            };
+        }
+        case actions.GET_USER_IMAGE: {
+            const  image  = action.payload;
+            AsyncStorage.setItem('user_img', JSON.stringify(image));
+            return {
+                ...state,
+                userImage:image,
             };
         }
         default: {

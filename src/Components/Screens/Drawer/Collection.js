@@ -26,8 +26,6 @@ class Collection extends React.Component {
 
       </View>,
 
-
-
   })
   constructor(props) {
     super(props);
@@ -156,7 +154,7 @@ class Collection extends React.Component {
           // data={this.state.users}
           showsVerticalScrollIndicator={false}
           renderItem={({item}) => */}
-         
+
           <View style={{ backgroundColor: "#fff", marginLeft: 5, marginRight: 5, flexDirection: "row", }}>
 
           <Image source={require('./../../../../assets/image/others.jpg')}
@@ -255,7 +253,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     paddingVertical:3,
     fontWeight:"bold"
-  
+
   },
 
 });
