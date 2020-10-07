@@ -233,7 +233,22 @@ const AppContainer = createAppContainer(AppNavigator);
 class App extends React.Component {
     componentDidMount() {
         NavigationService.setNavigator(this.navigator);
-        this.updateUser();
+        AsyncStorage.getItem('initial', (err, result) => {
+            if (result){
+                const { syncWithAsyncStorage } = this.props;
+
+                syncWithAsyncStorage({
+                    onSuccess: ({user, skiped}) => {
+                        if(user !== undefined){
+                            if((user || skiped === 'true')){
+                                this.updateUser();
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
     }
     updateUser = () => {
         const {getUser,getUserPicture} = this.props;
@@ -264,13 +279,20 @@ class App extends React.Component {
         }} />;
     }
 }
+const mapStateToProps = state => {
+    return {
+        user: state.AuthReducer.user,
+        skiped: state.AuthReducer.skiped,
+    };
+};
 
 export default connect(
-    null,
+    mapStateToProps,
     {
         logout: actions.logout,
         getUser: actionsUsers.getUser,
         getUserPicture: actionsUsers.getUserPicture,
+        syncWithAsyncStorage: actions.syncWithAsyncStorage
     }
 )(App);
 
