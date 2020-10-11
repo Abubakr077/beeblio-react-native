@@ -14,7 +14,7 @@ const UserReducer = (state = initSate, action) => {
 
         case actions.GET_USER_STATISTICS: {
             const  statics  = action.payload;
-            // AsyncStorage.setItem('statics', JSON.stringify(statics));
+            AsyncStorage.setItem('statics', JSON.stringify(statics));
             return {
                 ...state,
                 statics:statics,
@@ -22,7 +22,7 @@ const UserReducer = (state = initSate, action) => {
         }
         case actions.GET_USER_WORD_GRAPH: {
             const  chart  = action.payload;
-            // AsyncStorage.setItem('word_chart', JSON.stringify(chart));
+            AsyncStorage.setItem('word_chart', JSON.stringify(chart));
             return {
                 ...state,
                 chart:chart,

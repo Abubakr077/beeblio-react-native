@@ -24,7 +24,9 @@ import {connect} from "react-redux";
 import * as actions from "./Store/Actions/AuthActions";
 import * as actionsUsers from "./Store/Actions/UserActions";
 import {logout} from "./Store/Actions/AuthActions";
-
+import moment from "moment";
+import {Avatar} from "react-native-paper";
+let image,userObj,statics;
 const logoutUser = async () => {
 
 
@@ -62,17 +64,16 @@ const DrawerContent = (props) => (
       <View style={{marginTop:55}}>
 
       <View style={{ flexDirection: "row" }}>
-        <Image source={require('../assets/image/prof.png')}
-          style={{ width: 50, height: 50, borderRadius: 100 }} />
+          <Avatar.Image size={50} style={{ borderRadius: 100 }} source = {{uri : image?image:''}} />
           <View style={{marginLeft:12}} >
 
-        <Text style={{fontSize:18, color:"#fff", marginLeft: 5}}>JHON DOE</Text>
+        <Text style={{fontSize:18, color:"#fff", marginLeft: 5}}>{userObj?userObj.apiUserProfile.firstName+' '+userObj.apiUserProfile.lastName:''} </Text>
 
         <View style={{backgroundColor:"#fff", borderRadius:35, marginTop:5}}>
-        <Text style={{fontSize:15, color:"#000", marginLeft: 5, padding:5,}}>Member Since May 2016</Text>
+        <Text style={{fontSize:14, color:"#000", marginLeft: 5, padding:5,}}>Member Since {userObj?moment(userObj.apiUserProfile.dateCreated).format('MMMM YYYY'):''}</Text>
+
 
         </View>
-
         </View>
       </View>
 
@@ -87,7 +88,7 @@ const DrawerContent = (props) => (
 </View>
 
 <View style={{ marginVertical: 20 }}>
-  <Text style={{ fontSize: 18, color: "white", fontWeight: 'bold', textAlign: "center" }}>450</Text>
+  <Text style={{ fontSize: 18, color: "white", fontWeight: 'bold', textAlign: "center" }}>{statics?statics.totalContentSearched:0}</Text>
   <Text style={{ fontSize: 18, color: "white",  textAlign: "center", marginTop:15 }}>Texts</Text>
   <Text style={{ fontSize: 18, color: "white",  textAlign: "center", marginTop:5 }}>Filtered</Text>
 
@@ -105,8 +106,10 @@ const DrawerContent = (props) => (
 </View>
 
 <View style={{ marginVertical: 20 }}>
-  <Text style={{ fontSize: 18, color: "white", fontWeight: 'bold', textAlign: "center" }}>450</Text>
-  <Text style={{ fontSize: 18, color: "white",  textAlign: "center", marginTop:15 }}>URL</Text>
+
+  <Text style={{ fontSize: 18, color: "white", fontWeight: 'bold', textAlign: "center" }}>{statics?statics.totalUrlSearched:0}</Text>
+  <Text style={{ fontSize: 18, color: "white",  textAlign: "center", marginTop:15 }}>Url</Text>
+
   <Text style={{ fontSize: 18, color: "white",  textAlign: "center", marginTop:5 }}>Searched</Text>
 
 
@@ -124,7 +127,7 @@ const DrawerContent = (props) => (
 </View>
 
 <View style={{ marginVertical: 20 }}>
-  <Text style={{ fontSize: 18, color: "white", fontWeight: 'bold', textAlign: "center" }}>450</Text>
+  <Text style={{ fontSize: 18, color: "white", fontWeight: 'bold', textAlign: "center" }}>{statics?statics.totalWordCollected:0}</Text>
   <Text style={{ fontSize: 18, color: "white",  textAlign: "center", marginTop:15 }}>Words</Text>
   <Text style={{ fontSize: 18, color: "white",  textAlign: "center", marginTop:5 }}>Collected</Text>
 
@@ -290,15 +293,23 @@ class App extends React.Component {
 
     }
     updateUser = () => {
-        const {getUser,getUserPicture} = this.props;
+        const {getUser,getUserPicture,getStatistics} = this.props;
         this.setState({isLoadingContent: true});
+        AsyncStorage.getItem('statics').then((user) => {
+            statics = JSON.parse(user);
+        })
         getUser({
             onError: (error) => {
                 alert(error);
                 this.setState({isLoadingContent: false, progress: 0});
             },
             onSuccess: () => {
-                this.setState({isLoadingContent: false, isReady: true});
+                AsyncStorage.getItem('user_obj').then((user) => {
+                    userObj =  JSON.parse(user)
+                    this.setState({
+                        isReady: true
+                    })
+                })
             }
         });
         getUserPicture({
@@ -307,7 +318,23 @@ class App extends React.Component {
                 this.setState({isLoadingContent: false, progress: 0});
             },
             onSuccess: () => {
-                this.setState({isLoadingContent: false, isReady: true});
+                AsyncStorage.getItem('user_img').then((user) => {
+                    const imgObj = JSON.parse(user);
+                    image = imgObj.fileLink
+                    this.setState({
+                        isReady: true
+                    })
+                })
+            }
+        });
+        getStatistics({
+            onError: (error) => {
+                alert(error);
+                this.setState({isLoadingContent: false, progress: 0});
+
+            },
+            onSuccess: () => {
+                this.setState({isLoadingContent: false, progress: 0});
             }
         });
 
@@ -331,7 +358,8 @@ export default connect(
         logout: actions.logout,
         getUser: actionsUsers.getUser,
         getUserPicture: actionsUsers.getUserPicture,
-        syncWithAsyncStorage: actions.syncWithAsyncStorage
+        syncWithAsyncStorage: actions.syncWithAsyncStorage,
+        getStatistics: actionsUsers.getStatistics,
     }
 )(App);
 

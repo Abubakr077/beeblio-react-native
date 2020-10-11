@@ -95,7 +95,8 @@ class MainLogin extends React.Component {
             isFiltered:false,
             progress:0,
             content: [],
-            type: 'newspaper',
+            // type: 'newspaper',
+            type: 'magazine',
             isLoadingContent:false,
             isLoadingContentRss:false,
             modalVisible: false,
@@ -499,14 +500,12 @@ class MainLogin extends React.Component {
                                                     margin: 5,
                                                     flex: 1,
                                                     borderRadius: 5,
-                                                    width: 300,
-                                                    height: 350,
+                                                    width: 250,
+                                                    height: 300,
                                                     flexDirection: "row",
                                                     marginBottom: 5
                                                 }}>
-                                                    <View style={{flex: 1, justifyContent: "center", alignSelf: "center",}}>
-
-                                                        <View style={{ justifyContent: "center", alignItems: "center"}}>
+                                                    <View style={{flex: 1}}>
                                                             <Image
                                                                 style={{
                                                                     width: "100%",
@@ -516,7 +515,6 @@ class MainLogin extends React.Component {
                                                                 resizeMode={'cover'}
                                                                 source = {{uri : item.referenceImageLink}}
                                                             />
-                                                        </View>
                                                         <Text style={{
                                                             fontSize: 20,
                                                             color: "black",

@@ -9,7 +9,8 @@ const getContentSearches = options => async dispatch => {
   const {  onSuccess, onError } = options;
   try {
     const token = await AsyncStorage.getItem('user')
-    const user = await JSON.parse(AsyncStorage.getItem('user_obj'))
+    let user = await AsyncStorage.getItem('user_obj')
+    user = JSON.parse(user)
     const { data: res } = await axios.get(`${APIModel.HOST}/search?user_id=${user.id}&entity=interaction&excludeFields=response_body&limit=20&offset=0&termsAggregationField=content_id.keyword&order=desc`, {
       'headers': {
         'Content-Type': 'application/json',
@@ -37,8 +38,10 @@ const getContentSearches = options => async dispatch => {
 const doSearch = options => async dispatch => {
   const {  query,onSuccess, onError } = options;
   try {
+
     const token = await AsyncStorage.getItem('user')
-    const user = await JSON.parse(AsyncStorage.getItem('user_obj'))
+    let user = await AsyncStorage.getItem('user_obj')
+    user = JSON.parse(user)
     const { data: res } = await axios.get(`${APIModel.HOST}/search?user_id=${user.id}&entity=interaction&excludeFields=response_body&limit=20&offset=0&termsAggregationField=content_id.keyword&valueInAnyField=${query}&order=desc`, {
       'headers': {
         'Content-Type': 'application/json',
@@ -68,8 +71,9 @@ const getDetails = options => async dispatch => {
   const {  contentId,onSuccess, onError } = options;
   try {
     const token = await AsyncStorage.getItem('user')
-    const user = await JSON.parse(AsyncStorage.getItem('user_obj'))
-    const { data: res } = await axios.get(`${APIModel.HOST}/search?user_id=${user.id}&content_id=${contentId}`, {
+    let user = await AsyncStorage.getItem('user_obj')
+    user = JSON.parse(user)
+    const { data: res } = await axios.get(`${APIModel.HOST}/search?entity=interaction&user_id=${user.id}&content_id=${contentId}`, {
       'headers': {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
