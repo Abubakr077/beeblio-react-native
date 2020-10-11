@@ -15,7 +15,7 @@ class Collection extends React.Component {
         color='white'
       />
     ),
-    headerTitle: "Home",
+    headerTitle: "Collection",
     headerLeft:
       <View style={{ paddingLeft: 16 }}>
         <Icon
@@ -165,7 +165,15 @@ class Collection extends React.Component {
           <View style={{flexDirection:"column"}}>
           <Text style={{ fontSize: 18, color: "black", fontWeight: 'bold', textAlign: "center", marginLeft: 10, marginTop:15 }}>THE TITLE</Text>
           <Text style={{ fontSize: 16, color: "black",  textAlign: "center", marginLeft: 10, marginTop:5 }}>The Subtitle</Text>
+            <Image source={require('./../../../../assets/image/like.png')}
+                   style={{ height: 40, width: 30, margin: 5 }}>
 
+            </Image>
+            <Image source={require('./../../../../assets/image/dislike.png')}
+                   style={{ position:'absolute', right:19,height: 40, width: 30, marginTop: 75 }}
+                   >
+
+            </Image>
           </View>
 
 

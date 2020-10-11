@@ -12,10 +12,12 @@ import Loader from '../SeperateComponents/Loader';
 import moment from 'moment';
 import { Avatar } from 'react-native-paper';
 
+
 class Profile extends React.Component {
     static navigationOptions = ({navigation}) => ({
         drawerIcon: ({tintColor}) => (
             <View>
+
                 <Icon
                     name="home"
                     size={30}
@@ -23,7 +25,8 @@ class Profile extends React.Component {
                 />
             </View>
         ),
-        headerTitle: "Profile",
+
+        headerTitle: "My Profile" ,
         headerLeft:
             <View style={{paddingLeft: 16}}>
                 <Icon
@@ -31,7 +34,8 @@ class Profile extends React.Component {
                     size={30}
                     color='white'
                     onPress={() => navigation.toggleDrawer()}/>
-            </View>,
+
+                    </View>,
     })
 
     constructor(props) {

@@ -6,8 +6,9 @@ import Collection from "./Components/Screens/Drawer/Collection";
 import Search from "./Components/Screens/Drawer/Search";
 import Settings from "./Components/Screens/Drawer/Setting";
 import InitialScreen from "./Components/Screens/InitialScreen";
+import Meaning from "./Components/Screens/Drawer/Meaning";
 import DashBoard from './Components/Screens/Drawer/DashBoard';
-
+import content from "./Components/Screens/Drawer/content"
 import LoginScreen from "./Components/Screens/Auth/LoginScreen";
 import MainLogin from "./Components/Screens/Auth/MainLogin";
 import RegisterScreen from "./Components/Screens/Auth/RegisterScreen";
@@ -50,14 +51,15 @@ const DrawerContent = (props) => (
   <View>
     <View
       style={{
-        backgroundColor: '#256B9B',
+        backgroundColor: '#2da4cf',
         height: 340,
+
         // alignItems: 'center',
         // justifyContent: 'center',
 
       }}
     >
-      <View style={{marginTop:35}}>
+      <View style={{marginTop:55}}>
 
       <View style={{ flexDirection: "row" }}>
         <Image source={require('../assets/image/prof.png')}
@@ -67,7 +69,7 @@ const DrawerContent = (props) => (
         <Text style={{fontSize:18, color:"#fff", marginLeft: 5}}>JHON DOE</Text>
 
         <View style={{backgroundColor:"#fff", borderRadius:35, marginTop:5}}>
-        <Text style={{fontSize:15, color:"#000", marginLeft: 5, padding:5,}}>Member since May 2016</Text>
+        <Text style={{fontSize:15, color:"#000", marginLeft: 5, padding:5,}}>Member Since May 2016</Text>
 
         </View>
 
@@ -81,13 +83,13 @@ const DrawerContent = (props) => (
       <View style={{ justifyContent: "center", alignItems: "center", flex:1 }}>
 
 <View style={{ marginTop: 15, justifyContent: "center", alignItems: "center" }}>
-  <Image source={require('../assets/image/02.png')} style={{ width: 55, height: 55, resizeMode: "cover" }} />
+  <Image source={require('../assets/image/fil.png')} style={{ width: 45, height: 45, resizeMode: "cover" }} />
 </View>
 
 <View style={{ marginVertical: 20 }}>
   <Text style={{ fontSize: 18, color: "white", fontWeight: 'bold', textAlign: "center" }}>450</Text>
   <Text style={{ fontSize: 18, color: "white",  textAlign: "center", marginTop:15 }}>Texts</Text>
-  <Text style={{ fontSize: 18, color: "white",  textAlign: "center", marginTop:5 }}>Filters</Text>
+  <Text style={{ fontSize: 18, color: "white",  textAlign: "center", marginTop:5 }}>Filtered</Text>
 
 
 </View>
@@ -99,12 +101,12 @@ const DrawerContent = (props) => (
 <View style={{ justifyContent: "center", alignItems: "center", flex:1 }}>
 
 <View style={{ marginTop: 15, justifyContent: "center", alignItems: "center" }}>
-  <Image source={require('../assets/image/01.png')} style={{ width: 55, height: 55, resizeMode: "cover" }} />
+  <Image source={require('../assets/image/sear.png')} style={{ width: 45, height: 45, resizeMode: "cover" }} />
 </View>
 
 <View style={{ marginVertical: 20 }}>
   <Text style={{ fontSize: 18, color: "white", fontWeight: 'bold', textAlign: "center" }}>450</Text>
-  <Text style={{ fontSize: 18, color: "white",  textAlign: "center", marginTop:15 }}>Url</Text>
+  <Text style={{ fontSize: 18, color: "white",  textAlign: "center", marginTop:15 }}>URL</Text>
   <Text style={{ fontSize: 18, color: "white",  textAlign: "center", marginTop:5 }}>Searched</Text>
 
 
@@ -118,7 +120,7 @@ const DrawerContent = (props) => (
 <View style={{ justifyContent: "center", alignItems: "center", flex:1 }}>
 
 <View style={{ marginTop: 15, justifyContent: "center", alignItems: "center" }}>
-  <Image source={require('../assets/image/collect.png')} style={{ width: 55, height: 55, resizeMode: "cover" }} />
+  <Image source={require('../assets/image/colle.png')} style={{ width: 45, height: 45, resizeMode: "cover" }} />
 </View>
 
 <View style={{ marginVertical: 20 }}>
@@ -151,44 +153,68 @@ const appStackNavigator = createStackNavigator({ HomeScreen }, {
   navigationOptions:
   {
     title: 'Home', drawerIcon: ({ tintColor }) => (
-      <Icon
-        name="home"
-        size={30}
-        color='white'
-      />
+          <Image style={{
+              height: 20,
+              width: 20,
+          }} source={require('../assets/image/home.jpg')} />
+
     )
   },
 })
 const appStackProfile = createStackNavigator({ Profile }, {
     navigationOptions:
         {
-            title: 'Profile', drawerIcon: ({ tintColor }) => (
+            title: 'My Profile', drawerIcon: ({ tintColor }) => (
                 <Image style={{
                     height: 20,
                     width: 20,
-                }} source={require('../assets/image/icon-user.png')} />
+                }} source={require('../assets/image/profi.png')} />
             )
         },
 })
 const appStackCollection = createStackNavigator({ Collection }, {
     navigationOptions:
         {
-            title: 'Collections', drawerIcon: ({ tintColor }) => (
+            title: 'My Collection', drawerIcon: ({ tintColor }) => (
                 <Image style={{
                     height: 20,
                     width: 20,
-                }} source={require('../assets/image/collection.png')} />
+                }} source={require('../assets/image/coll.png')} />
             )
+
         },
+
 })
 const appStackSearch = createStackNavigator({ Search }, {
     navigationOptions:
         {
-            title: 'Searches', drawerIcon: ({ tintColor }) => (
+            title: 'My Searches', drawerIcon: ({ tintColor }) => (
                 <Image style={{
                     height: 20,
                     width: 20,
-                }} source={require('../assets/image/searchh.png')} />
+                }} source={require('../assets/image/sea.png')} />
+            )
+        },
+})
+const appStackMeaning = createStackNavigator({ Meaning }, {
+    navigationOptions:
+        {
+            title: 'Dictionary', drawerIcon: ({ tintColor }) => (
+                <Image style={{
+                    height: 20,
+                    width: 20,
+                }} source={require('../assets/image/invi.png')} />
+            )
+        },
+})
+const appStackContent = createStackNavigator({ content }, {
+    navigationOptions:
+        {
+            title: 'Content', drawerIcon: ({ tintColor }) => (
+                <Image style={{
+                    height: 20,
+                    width: 20,
+                }} source={require('../assets/image/invi.png')} />
             )
         },
 })
@@ -199,7 +225,18 @@ const appStackSettings = createStackNavigator({ Settings }, {
                 <Image style={{
                     height: 20,
                     width: 20,
-                }} source={require('../assets/image/gear.png')} />
+                }} source={require('../assets/image/setting.png')} />
+            )
+        },
+})
+const appStackLog = createStackNavigator({ Settings }, {
+    navigationOptions:
+        {
+            title: 'Logout', drawerIcon: ({ tintColor }) => (
+                <Image style={{
+                    height: 20,
+                    width: 20,
+                }} source={require('../assets/image/log.png')} />
             )
         },
 })
@@ -208,9 +245,11 @@ const appDrawerNavigator = createDrawerNavigator({
   'My Profile': appStackProfile,
   'My Collection': appStackCollection,
   'My Searches': appStackSearch,
-  // 'Invite Friends': Profile,
-  'Settings': appStackSettings,
-    logout: 'LogoutScreen'
+    'Dictionary': appStackMeaning,
+  'Setting': appStackSettings,
+    'Content': appStackContent,
+    logout: appStackLog,
+    //logout: 'LogoutScreen'
 }, {
   contentComponent: DrawerContent,
 })

@@ -200,7 +200,7 @@ class DashBoard extends React.Component {
                                         justifyContent: "center",
                                         alignItems: "center"
                                     }}>
-                                        <Image source={require('./../../../../assets/image/02.png')}
+                                        <Image source={require('./../../../../assets/image/fil.png')}
                                                style={{width: 45, height: 45, resizeMode: "cover"}}/>
                                         <View style={{
                                             flexDirection: "column",
@@ -251,7 +251,7 @@ class DashBoard extends React.Component {
                                         justifyContent: "center",
                                         alignItems: "center"
                                     }}>
-                                        <Image source={require('./../../../../assets/image/01.png')}
+                                        <Image source={require('./../../../../assets/image/sear.png')}
                                                style={{width: 45, height: 45, resizeMode: "cover"}}/>
                                         <View style={{
                                             flexDirection: "column",
@@ -280,7 +280,7 @@ class DashBoard extends React.Component {
                                     <View style={{marginTop: 20, width: "100%"}}>
                                         <Progress.Bar progress={0.7}
                                                       width={150}
-                                                      color="#FFE92E"
+                                                      color="#d097e8"
                                                       height={10}/>
 
                                     </View>
