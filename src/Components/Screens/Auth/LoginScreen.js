@@ -1,7 +1,7 @@
 import React from 'react';
 import {
     StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, ImageBackground,
-    TextInput
+    TextInput, Alert,Keyboard
 } from 'react-native';
 import { Item, Input, Icon } from 'native-base';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -9,16 +9,9 @@ import * as NavigationService from '../../../NavigationService';
 import InputField from '../../SeperateComponents/InputField'
 import {connect} from "react-redux";
 import * as actions from "../../../Store/Actions/AuthActions";
-class LoginScreen extends React.Component {
-    static navigationOptions = ({ navigation }) => ({
-        drawerIcon: ({ tintColor }) => (
-            <Icon
-                name="home"
-                size={30}
-                color='white'
-            />
-        )
-    })
+import * as actionsUsers from "../../../Store/Actions/UserActions";
+class LoginScreen extends React.PureComponent {
+
     constructor(props) {
         super(props);
         this.state = {
@@ -28,6 +21,7 @@ class LoginScreen extends React.Component {
     }
 
     moveToHome = () => {
+        Keyboard.dismiss();
         NavigationService.navigateAndResetStack("HomeScreen");
     };
     toggleSubmitting = () => {
@@ -36,15 +30,44 @@ class LoginScreen extends React.Component {
             submitting: !submitting,
         });
     };
+    updateUser = () => {
+        const {getUser} = this.props;
+        getUser({
+            onError: (error) => {
+                Alert.alert(
+                    'Error',
+                    error
+                    , [
+                        {text: 'Okay'}
+                    ]
+                );
+            },
+            onSuccess: () => {
+                this.moveToHome();
+            }
+        });
+    }
     login = () => {
         const { login } = this.props;
 
         const { email, password } = this.state;
         if (!email) {
-            return alert('Email is required.');
+            return Alert.alert(
+                'Error',
+                'Email is required.'
+                ,[
+                    {text: 'Okay'}
+                ]
+            );
         }
         if (!password) {
-            return alert('Password is required.');
+            return Alert.alert(
+                'Error',
+                'Password is required.'
+                ,[
+                    {text: 'Okay'}
+                ]
+            );
         }
 
         this.toggleSubmitting();
@@ -52,10 +75,16 @@ class LoginScreen extends React.Component {
         login({
             data: { email, password },
             onSuccess: () => {
-                this.moveToHome();
+                this.updateUser();
             },
             onError: (message) => {
-                alert(message);
+                Alert.alert(
+                    'Error',
+                    message
+                    ,[
+                        {text: 'Okay'}
+                    ]
+                );
                 this.toggleSubmitting();
             }
         });
@@ -304,6 +333,7 @@ const styles = StyleSheet.create({
 export default connect(
     null,
     {
-        login: actions.login
+        login: actions.login,
+        getUser: actionsUsers.getUser,
     }
 )(LoginScreen);

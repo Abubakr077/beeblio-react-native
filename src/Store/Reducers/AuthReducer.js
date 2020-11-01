@@ -3,9 +3,12 @@ import { AsyncStorage } from 'react-native';
 
 const initSate = {
     user: undefined,
+    filterContentId: undefined,
+    filteredItem: undefined,
     skiped: 'false',
     content:[],
     rssFeedItems:[],
+    filterItems:[],
 };
 
 const AuthReducer = (state = initSate, action) => {
@@ -27,9 +30,6 @@ const AuthReducer = (state = initSate, action) => {
         }
         case actions.LOGIN: {
             const { user } = action.payload;
-            AsyncStorage.setItem('user', user);
-            console.log('set user');
-            console.log(user);
             return {
                 ...state,
                 user,
@@ -44,10 +44,8 @@ const AuthReducer = (state = initSate, action) => {
             };
         }
         case actions.LOGOUT: {
-            AsyncStorage.removeItem('user');
             return {
-                ...state,
-                user: null,
+                state: {...initSate},
             };
         }
         case actions.GET_CONTENT: {
@@ -60,6 +58,25 @@ const AuthReducer = (state = initSate, action) => {
             return {
                 ...state,
                 rssFeedItems: [...action.payload],
+            };
+        }
+        case actions.GET_CONTENT_FILTER_ITEM: {
+            return {
+                ...state,
+                filteredItem: action.payload,
+            };
+        }
+        case actions.GET_CONTENT_FILTER: {
+            Object.entries(action.payload.filterResult).filter(e => {
+                initSate.filterItems.push({
+                    key:e[0],
+                    value:e[1]
+                })
+            });
+            return {
+                ...state,
+                filterItems: [...initSate.filterItems],
+                filterContentId: action.payload.contentId
             };
         }
         default: {

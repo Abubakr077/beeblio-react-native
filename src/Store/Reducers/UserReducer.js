@@ -2,10 +2,10 @@ import * as actions from "../Actions/type";
 import { AsyncStorage } from 'react-native';
 
 const initSate = {
-    statics: undefined,
-    chart: undefined,
-    user: undefined,
-    userImage: undefined,
+    statics: null,
+    chart: null,
+    user: null,
+    userImage: null,
 };
 
 const UserReducer = (state = initSate, action) => {
@@ -22,7 +22,6 @@ const UserReducer = (state = initSate, action) => {
         }
         case actions.GET_USER_WORD_GRAPH: {
             const  chart  = action.payload;
-            AsyncStorage.setItem('word_chart', JSON.stringify(chart));
             return {
                 ...state,
                 chart:chart,
@@ -30,7 +29,6 @@ const UserReducer = (state = initSate, action) => {
         }
         case actions.GET_USER: {
             const  user  = action.payload;
-            AsyncStorage.setItem('user_obj', JSON.stringify(user));
             return {
                 ...state,
                 user:user,

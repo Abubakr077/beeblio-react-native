@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Image, ImageBackground, ScrollView, Dimensions,
 import { Container, Header,Icon } from 'native-base';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 import {LinearGradient} from "expo-linear-gradient";
-class content extends React.Component {
+class content extends React.PureComponent {
     constructor(props) {
         super(props);
         this.state = {
@@ -11,23 +11,7 @@ class content extends React.Component {
         };
     }
     static navigationOptions = ({ navigation }) => ({
-        drawerIcon: ({ tintColor }) => (
-            <Icon
-                name="home"
-                size={30}
-                color='white'
-            />
-        ),
-        headerTitle: "Content",
-        headerLeft:
-            <View style={{ paddingLeft: 16 }}>
-                <Icon
-                    name="md-menu"
-                    size={30}
-                    color='white'
-                    onPress={() => navigation.toggleDrawer()} />
-
-            </View>,
+        header: (props) => <Header navigation={navigation}  previous={false}/>
     })
     render() {
         return (

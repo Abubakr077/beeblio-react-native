@@ -6,7 +6,7 @@ import {StyleSheet, Text, View, Image, AsyncStorage} from 'react-native';
 import * as actions from '../../Store/Actions/AuthActions';
 import * as NavigationService from '../../NavigationService'
 
-class SplashScreen extends React.Component {
+class SplashScreen extends React.PureComponent {
 
 
   componentDidMount(){

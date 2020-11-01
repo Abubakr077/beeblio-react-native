@@ -1,28 +1,23 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, ImageBackground, ScrollView, FlatList, Dimensions } from 'react-native';
-import { Icon, Drawer } from "native-base";
-import { DrawerItems } from 'react-navigation';
-import { TabView, SceneMap, TabBar } from "react-native-tab-view";
-import { LinearGradient } from 'expo-linear-gradient';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  ImageBackground,
+  ScrollView,
+  FlatList,
+  Alert,
+} from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import {connect} from "react-redux";
 import * as actions from "../../../Store/Actions/DictionaryActions";
-
-const DATA = [
-  {
-    title: 'Help',
-  },
-  {
-    title: 'Hello',
-  },
-  {
-    title: 'Hello',
-  },
-];
+import Header from "../../SeperateComponents/Header";
+import Loader from "../../SeperateComponents/Loader";
+import * as actionsUsers from "../../../Store/Actions/UserActions";
 
 
-
-class Setting extends React.Component {
+class Setting extends React.PureComponent  {
   constructor(props) {
     super(props);
     this.state = {
@@ -34,35 +29,56 @@ class Setting extends React.Component {
       email: "",
       selectedItem: 0,
       isLoadingContent: true,
+      dictionaryID:''
 
     };
-    this.update();
+    this.update= this.update.bind(this);
   }
   static navigationOptions = ({ navigation }) => ({
-    drawerIcon: ({ tintColor }) => (
-      <Icon
-        name="setting"
-        size={30}
-        color='white'
-      />
-    ),
-    headerTitle: "Settings",
-    headerLeft:
-      <View style={{ paddingLeft: 16 }}>
-        <Icon
-          name="md-menu"
-          size={30}
-          color='white'
-          onPress={() => navigation.toggleDrawer()} />
-      </View>,
+    header: (props) => <Header navigation={navigation}  previous={false}/>
   })
-  update = () => {
+  componentDidMount() {
+    this.update();
+    // alert('position here: '+this.props.position);
+  }
+  updateUser = () => {
+    const {getUser} = this.props;
+    getUser({
+      onError: (error) => {
+        this.setState({isLoadingContent: false});
+        Alert.alert(
+            'Error',
+            error
+            , [
+              {text: 'Okay'}
+            ]
+        );
+      },
+      onSuccess: () => {
+        this.setState({isLoadingContent: false});
+        Alert.alert(
+            'Success',
+            'Default Dictionary Changed'
+            ,[
+              {text: 'Okay'}
+            ]
+        );
+      }
+    });
+  }
+  update() {
     const {getDictionaries} = this.props;
 
     this.setState({isLoadingContent: true});
     getDictionaries({
       onError: (error) => {
-        alert(error);
+        Alert.alert(
+            'Error',
+            error
+            ,[
+              {text: 'Okay'}
+            ]
+        );
         this.setState({isLoadingContent: false});
       },
       onSuccess: () => {
@@ -70,10 +86,37 @@ class Setting extends React.Component {
       }
     });
   }
-  componentWillReceiveProps(nextProps, nextContext) {
-    if (nextProps.dictionaries !== this.state.dictionaries) {
-      this.setState({dictionaries: nextProps.dictionaries});
+
+  updateDictionary(id) {
+    const {setDictionary} = this.props;
+
+    this.setState({isLoadingContent: true});
+    setDictionary({
+      onError: (error) => {
+        this.setState({isLoadingContent: false});
+        Alert.alert(
+            'Error',
+            error
+            ,[
+              {text: 'Okay'}
+            ]
+        );
+      },
+      onSuccess: () => {
+        this.updateUser();
+      },data:{
+        dictionaryId: id
+      }
+    });
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    if (props.dictionaries !== state.dictionaries) {
+      return {
+        dictionaries: props.dictionaries
+      };
     }
+    return null;
   }
   render() {
 
@@ -83,23 +126,16 @@ class Setting extends React.Component {
     } = this.state;
     return (
       <View style={styles.container}>
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1,paddingBottom:30 }}>
           <ImageBackground source={require('./../../../../assets/image/wave.png')} style={styles.backgroundImage}>
 
             <Text style={{ fontSize: 20, color: "black", fontWeight: 'bold', textAlign: "center", marginTop: "13%" }}>RECOMMENDED SITES</Text>
 
-            {isLoadingContent ? <Text>loading...</Text> : <FlatList
+            {isLoadingContent ? <Loader/> : <FlatList
               data={dictionaries}
               showsVerticalScrollIndicator={false}
-              horizontal={true}
               renderItem={({ item }) =><TouchableOpacity
-                  onPress={() => {
-                    // this.setState({
-                    //   xmlUrl: item.rssFeeds[0]
-                    // },()=>{
-                    //   this.getNewContentRss();
-                    // })
-                  }}
+                  onPress={this.updateDictionary.bind(this,item.id)}
                   style={{
                     flex: 1,
                     backgroundColor: "#fff",
@@ -111,7 +147,7 @@ class Setting extends React.Component {
                     elevation: 15,
                     margin: 5,
                     borderRadius: 5,
-                    width: 350,
+                    width: 400,
                     height: 150,
                     flexDirection: "row",
                     marginBottom: 5,
@@ -154,7 +190,6 @@ const styles = StyleSheet.create({
 
   },
   backgroundImage: {
-    // flex: 1,
     resizeMode: 'cover', // or 'stretch'
     justifyContent: 'center',
     alignItems: "center"
@@ -177,6 +212,8 @@ export default connect(
     mapStateToProps,
     {
       getDictionaries: actions.getDictionaries,
+      setDictionary: actions.setDictionary,
+    getUser: actionsUsers.getUser,
     },
 )(Setting);
 

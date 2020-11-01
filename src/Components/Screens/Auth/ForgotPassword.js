@@ -1,7 +1,7 @@
 import React from 'react';
 import {
     StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, ImageBackground,
-    TextInput
+    TextInput, Alert
 } from 'react-native';
 import { Item, Input, Icon } from 'native-base';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -9,7 +9,7 @@ import * as NavigationService from '../../../NavigationService';
 import InputField from '../../SeperateComponents/InputField'
 import {connect} from "react-redux";
 import * as actions from "../../../Store/Actions/AuthActions";
-class ForgotPassword extends React.Component {
+class ForgotPassword extends React.PureComponent {
 
     constructor(props) {
         super(props);
@@ -23,7 +23,7 @@ class ForgotPassword extends React.Component {
         this.props.navigation.navigate("LoginScreen");
     };
     moveBack=()=>{
-        this.props.navigation.goBack(null);
+        this.props.navigation.goBack();
     }
     toggleSubmitting = () => {
         const {submitting} = this.state;
@@ -36,7 +36,14 @@ class ForgotPassword extends React.Component {
 
         const { email } = this.state;
         if (!email) {
-            return alert('Email is required.');
+             Alert.alert(
+                'Error',
+                 'Email is required.'
+                ,[
+                    {text: 'Okay'}
+                ]
+            );
+            return
         }
 
         this.toggleSubmitting();
@@ -44,11 +51,23 @@ class ForgotPassword extends React.Component {
         forgotPassword({
             data: { email},
             onSuccess: (response) => {
-                alert(response);
+                Alert.alert(
+                    'Success',
+                    response
+                    ,[
+                        {text: 'Okay'}
+                    ]
+                );
                 this.moveToHome();
             },
             onError: (message) => {
-                alert(message);
+                Alert.alert(
+                    'Error',
+                    message
+                    ,[
+                        {text: 'Okay'}
+                    ]
+                );
                 this.toggleSubmitting();
             }
         });
@@ -110,7 +129,7 @@ class ForgotPassword extends React.Component {
 
 
                         <TouchableOpacity
-                            onPress={ this.moveBack()}
+                            onPress={ ()=>this.moveBack()}
                         >
                         <Text
                             style={{

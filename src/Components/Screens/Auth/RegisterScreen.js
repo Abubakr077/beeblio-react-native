@@ -8,8 +8,7 @@ import {
     TouchableOpacity,
     Image,
     ImageBackground,
-    TextInput,
-    ScrollView
+    ScrollView, Alert,Keyboard
 
 } from 'react-native';
 import {LinearGradient} from 'expo-linear-gradient';
@@ -17,16 +16,8 @@ import InputField from '../../SeperateComponents/InputField'
 import * as actions from '../../../Store/Actions/AuthActions';
 import * as NavigationService from '../../../NavigationService';
 
-class RegisterScreen extends React.Component {
-    static navigationOptions = ({navigation}) => ({
-        drawerIcon: ({tintColor}) => (
-            <Icon
-                name="home"
-                size={30}
-                color='white'
-            />
-        )
-    })
+class RegisterScreen extends React.PureComponent {
+
 
     constructor(props) {
         super(props);
@@ -46,6 +37,7 @@ class RegisterScreen extends React.Component {
     }
 
     moveToLogin = () => {
+        Keyboard.dismiss();
         NavigationService.navigateAndResetStack('LoginScreen');
     };
     toggleSubmitting = () => {
@@ -100,11 +92,23 @@ class RegisterScreen extends React.Component {
         register({
             data: {email, screenName, password, firstName},
             onSuccess: (response) => {
-                alert(response);
+                Alert.alert(
+                    'Success',
+                    response
+                    ,[
+                        {text: 'Okay'}
+                    ]
+                );
                 this.moveToLogin();
             },
             onError: message => {
-                alert(message);
+                Alert.alert(
+                    'Error',
+                    message
+                    ,[
+                        {text: 'Okay'}
+                    ]
+                );
                 this.toggleSubmitting();
             }
         });

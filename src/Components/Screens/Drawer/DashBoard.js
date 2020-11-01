@@ -1,28 +1,30 @@
 import React from 'react';
+
 import {
+    Alert,
+    AsyncStorage,
+    Dimensions,
+    Image,
+    ImageBackground, LogBox,
+    SafeAreaView,
+    ScrollView,
     StyleSheet,
     Text,
-    View,
-    Image,
-    ImageBackground,
-    Dimensions,
-    ScrollView,
-    SafeAreaView,
-    AsyncStorage
+    View
 } from 'react-native';
-import {Icon, Drawer} from "native-base";
-import {DrawerItems} from 'react-navigation';
 import {LinearGradient} from 'expo-linear-gradient';
 import * as Progress from 'react-native-progress';
-import {BarChart, LineChart} from "react-native-chart-kit";
+import {LineChart} from "react-native-chart-kit";
 import {connect} from "react-redux";
 import * as actions from "../../../Store/Actions/UserActions";
+import Loader from "../../SeperateComponents/Loader";
+import Header from "../../SeperateComponents/Header";
 
 const screenWidth = Dimensions.get("window").width;
 const monthNames = ["", "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
 ];
-
+LogBox.ignoreAllLogs()
 const chartConfig = {
     backgroundGradientFrom: "#1E2923",
     backgroundGradientFromOpacity: 0,
@@ -35,27 +37,9 @@ const chartConfig = {
 };
 
 
-class DashBoard extends React.Component {
-    static navigationOptions = ({navigation}) => ({
-        drawerIcon: ({tintColor}) => (
-            <Icon
-                name="home"
-                size={30}
-                color='white'
-            />
-        ),
-        headerTitle: "Home",
-        headerLeft:
-            <View style={{paddingLeft: 16}}>
-                <Icon
-                    name="md-menu"
-                    size={30}
-                    color='white'
-                    onPress={() => navigation.toggleDrawer()}/>
-
-            </View>,
-
-
+class DashBoard extends React.PureComponent {
+    static navigationOptions = ({ navigation }) => ({
+        header: (props) => <Header navigation={navigation}  previous={false}/>
     })
 
     constructor(props) {
@@ -63,14 +47,10 @@ class DashBoard extends React.Component {
         this.state = {
             statics: '',
             isReady: false,
-            user: null
+            isReadyStatics: false,
+            user: null,
+            data: null
         };
-        this.data = null;
-        AsyncStorage.getItem('user_obj').then((user) => {
-            this.setState({
-                user: JSON.parse(user)
-            })
-        })
     }
 
     componentDidMount() {
@@ -78,70 +58,117 @@ class DashBoard extends React.Component {
         this.updateChart();
     }
 
-    updateStatics = () => {
+
+    updateStatics () {
         const {getStatistics} = this.props;
 
-        this.setState({isLoadingContent: true});
+        this.setState({isReadyStatics: false});
         getStatistics({
             onError: (error) => {
-                alert(error);
+                Alert.alert(
+                    'Error',
+                    error
+                    ,[
+                        {text: 'Okay'}
+                    ]
+                );
                 this.setState({isLoadingContent: false, progress: 0});
 
             },
             onSuccess: () => {
-                this.setState({isLoadingContent: false, progress: 0});
+                this.setState({isReadyStatics: true, progress: 0});
             }
         });
 
     }
-    updateChart = () => {
+    updateChart (){
         const {getWordChart} = this.props;
 
         this.setState({isLoadingContent: true});
         getWordChart({
             onError: (error) => {
-                alert(error);
+                Alert.alert(
+                    'Error',
+                    error
+                    ,[
+                        {text: 'Okay'}
+                    ]
+                );
                 this.setState({isLoadingContent: false, progress: 0});
 
             },
             onSuccess: () => {
-                let array = ['0'];
-                const chart = this.state.chart;
-                array.push(chart.wordFiltered.toString());
-                array.push(chart.wordCollected.toString());
-                this.data = {
-                    labels: ["", "Words Searched", "Words Collected"],
-                    datasets: [
-                        {
-                            data: array,
-                            color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`,
-                            strokeWidth: 2
-                        }
-                    ],
-                    legend: [monthNames[chart.monthValue]]
-                };
-                this.setState({isLoadingContent: false, isReady: true});
+                // let array = ['0'];
+                // const chart = this.state.chart;
+                // array.push(chart.wordFiltered.toString());
+                // array.push(chart.wordCollected.toString());
+                // this.data = {
+                //     labels: ["", "Words Searched", "Words Collected"],
+                //     datasets: [
+                //         {
+                //             data: array,
+                //             color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`,
+                //             strokeWidth: 2
+                //         }
+                //     ],
+                //     legend: [monthNames[chart.monthValue]]
+                // };
+                this.setState({
+                    data: this.formatChartData(this.state.chart),
+                    isLoadingContent: false, isReady: true
+                })
             }
         });
 
     }
+    formatChartData = (chartData) => {
+        const labels = [""];
+        const wordSearched = [0];
+        const wordCollected = [0];
 
-    componentWillReceiveProps(nextProps, nextContext) {
-        if (nextProps.statics !== this.state.statics) {
-            this.setState({statics: nextProps.statics});
-        }
-        if (nextProps.chart !== this.state.chart) {
-            this.setState({chart: nextProps.chart});
-        }
+        chartData.map(
+            (resultData) => {
+                labels.push([monthNames[resultData.monthValue]]);
+                wordSearched.push(+resultData.wordFiltered);
+                wordCollected.push(+resultData.wordCollected);
+            }
+        )
+        return {
+            labels: labels,
+            datasets: [{
+                label: "Words Searched",
+                backgroundColor: "#5867DD",
+                data: wordSearched
+            },
+                {
+                    label: "Words Collected",
+                    backgroundColor: "#008CD3",
+                    data: wordCollected
+                }]
+        };
     }
 
+    static getDerivedStateFromProps(props, state) {
+        if (props.statics !== state.statics) {
+            return {statics: props.statics};
+        }
+        if (props.chart !== state.chart) {
+            return {chart: props.chart};
+        }
+        if (props.user !== state.user) {
+            return {user: props.user};
+        }
+        return null;
+    }
     render() {
 
         const {
             statics,
             isReady,
+            isReadyStatics,
             chart,
-            user
+            user,
+            data
         } = this.state;
         return (
             <SafeAreaView style={styles.container}>
@@ -155,14 +182,14 @@ class DashBoard extends React.Component {
                             fontWeight: 'bold',
                             textAlign: "center",
                             marginTop: 17
-                        }}>{user.apiUserProfile.firstName}</Text> : <View/>}
+                        }}>{user.apiUserProfile.firstName+' '+user.apiUserProfile.lastName}</Text> : <View/>}
                         <Text style={{
                             fontSize: 27,
                             color: "black",
                             fontWeight: 'bold',
                             textAlign: "center",
                             marginTop: 15
-                        }}>{chart ? chart.wordCollected : 0}</Text>
+                        }}>{chart ? chart?.wordCollected : 0}</Text>
 
                         <View style={{backgroundColor: "#0F0B41", borderRadius: 10, marginTop: 15}}>
 
@@ -178,7 +205,7 @@ class DashBoard extends React.Component {
 
                         </View>
 
-                        <View style={{
+                        {isReadyStatics?<View style={{
                             flexDirection: "row",
                             justifyContent: "center",
                             alignItems: "center",
@@ -289,7 +316,7 @@ class DashBoard extends React.Component {
                                 </View>
                             </LinearGradient>
 
-                        </View>
+                        </View>:<Loader/>}
 
 
                     </ImageBackground>
@@ -310,11 +337,11 @@ class DashBoard extends React.Component {
 
                         {isReady ? <LineChart
                             style={{width: "80%"}}
-                            data={this.data}
+                            data={data}
                             width={screenWidth}
                             height={220}
                             chartConfig={chartConfig}
-                        /> : <View/>}
+                        /> : <Loader/>}
 
                         <View style={{
                             flexDirection: "row",
@@ -474,6 +501,7 @@ const mapStateToProps = state => {
     return {
         statics: state.UserReducer.statics,
         chart: state.UserReducer.chart,
+        user: state.UserReducer.user,
     };
 };
 

@@ -1,84 +1,208 @@
 import React from 'react';
 import {
-    StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, ImageBackground,
-    TextInput, Dimensions, AsyncStorage
+    StyleSheet, Text, View, Image, ScrollView, ImageBackground,
+    TextInput, Dimensions, AsyncStorage, Alert
 } from 'react-native';
-import {Item, Input, Icon} from 'native-base';
 import {LinearGradient} from 'expo-linear-gradient';
-
+import * as ImagePicker from 'expo-image-picker';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 import Loader from '../SeperateComponents/Loader';
 import moment from 'moment';
 import { Avatar } from 'react-native-paper';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import {connect} from "react-redux";
+import * as actions from "../../Store/Actions/UserActions";
+import APIModel from "../../Models/APIModal";
+import Header from "../SeperateComponents/Header";
 
 
-class Profile extends React.Component {
-    static navigationOptions = ({navigation}) => ({
-        drawerIcon: ({tintColor}) => (
-            <View>
-
-                <Icon
-                    name="home"
-                    size={30}
-                    color='white'
-                />
-            </View>
-        ),
-
-        headerTitle: "My Profile" ,
-        headerLeft:
-            <View style={{paddingLeft: 16}}>
-                <Icon
-                    name="md-menu"
-                    size={30}
-                    color='white'
-                    onPress={() => navigation.toggleDrawer()}/>
-
-                    </View>,
+class Profile extends React.PureComponent {
+    static navigationOptions = ({ navigation }) => ({
+        header: (props) => <Header navigation={navigation}  previous={false}/>
     })
-
     constructor(props) {
         super(props);
         this.state = {
             email_address: 'j',
             user: null,
+            userImage: null,
             isReady: false,
             email: '',
             firstName: '',
             lastName:'',
             password: '',
-            image: ''
+            image: '',
+            selectedImage: undefined,
         };
-        AsyncStorage.getItem('user_obj').then((user) => {
-            this.setState({
-                user: JSON.parse(user),
+        this.updateProfileInfo = this.updateProfileInfo.bind(this);
+        this.uploadPhoto = this.uploadPhoto.bind(this);
+    }
+    static getDerivedStateFromProps(props, state) {
+        if (props.userImage !== state.userImage) {
+            return {
+                userImage: props.userImage,
+                image:  props.userImage.fileLink
+            };
+        }
+        if (props.user !== state.user) {
+            return {
+                user: props.user,
+                firstName: props.user.apiUserProfile.firstName,
+                lastName: props.user.apiUserProfile.lastName,
+                email: props.user.email,
                 isReady: true
-            },()=>{
+            };
+        }
+        return null;
+    }
+    componentDidMount() {
+        const {user,userImage} = this.state;
+        if (user){
+            this.setState({
+                firstName: user.apiUserProfile.firstName,
+                lastName: user.apiUserProfile.lastName,
+                email: user.email,
+                isReady: true
+            })
+        }
+        if (userImage){
+            this.setState({
+                image: userImage.fileLink,
+                isReady: true
+            })
+        }
+    }
+
+    updateProfileInfo() {
+        const {updateProfile} = this.props;
+        const { firstName,lastName,email} = this.state;
+
+        this.setState({isReady: false});
+        updateProfile({
+            onError: (error) => {
+                this.setState({isReady: true});
+                Alert.alert(
+                    'Error',
+                    error
+                    ,[
+                        {text: 'Okay'}
+                    ]
+                );
+            },
+            onSuccess: () => {
+                Alert.alert(
+                    'Success',
+                    'Profile updated successfully'
+                    ,[
+                        {text: 'Okay'}
+                    ]
+                );
+                this.setState({isReady: true});
+            },data:{
+                firstName,
+                lastName,
+                email
+            }
+        });
+    }
+
+    uploadPhoto() {
+        const {updateUserPicture} = this.props;
+        const {selectedImage} = this.state;
+        this.setState({isReady: false});
+        updateUserPicture({
+            onError: (error) => {
+                this.setState({isReady: true});
+                alert(error)
+                Alert.alert(
+                    'Error',
+                    error
+                    ,[
+                        {text: 'Okay'}
+                    ]
+                );
+            },
+            onSuccess: () => {
+                this.setState({isReady: true,image: selectedImage});
+                Alert.alert(
+                    'Success',
+                    'Photo updated successfully'
+                    ,[
+                        {text: 'Okay'}
+                    ]
+                );
+            },selectedImage
+        });
+    }
+    async takeAndUploadPhotoAsync() {
+        // Display the camera to the user and wait for them to take a photo or to cancel
+        // the action
+        let result = await ImagePicker.launchImageLibraryAsync();
+
+        if (result.cancelled) {
+            return;
+        }
+
+        // ImagePicker saves the taken photo to disk and returns a local URI to it
+        let localUri = result.uri;
+        let filename = localUri.split('/').pop();
+
+        // Infer the type of the image
+        let match = /\.(\w+)$/.exec(filename);
+        let type = match ? `image/${match[1]}` : `image`;
+
+        // Upload the image using the fetch and FormData APIs
+        let formData = new FormData();
+        // Assume "photo" is the name of the form field the server expects
+        formData.append('file', { uri: localUri, filename: filename, type:'"multipart/form-data",' });
+        const token = await AsyncStorage.getItem('user')
+        console.log(formData);
+        this.setState({
+            isReady: false
+        })
+        await fetch(`${APIModel.HOST}/user/image`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'content-type': 'multipart/form-data',
+                'authorization': token,
+            },
+        }).then(response => response.json())
+            .then(json => {
+                console.log(json);
                 this.setState({
-                    firstName: this.state.user.apiUserProfile.firstName,
-                    lastName: this.state.user.apiUserProfile.lastName,
-                    email: this.state.user.email,
+                    isReady: true
                 })
-            })
-        })
-        AsyncStorage.getItem('user_img').then((user) => {
-            const imgObj = JSON.parse(user);
-            this.setState({
-                image: imgObj.fileLink,
-                isReady: true
-            })
-        })
+                // if (json.error){
+                //     alert('error')
+                // }else {
+                //     alert('success')
+                // }
+            });
     }
+    openImagePickerAsync = async () => {
+        let permissionResult = await ImagePicker.requestCameraRollPermissionsAsync();
 
-    _signIn = () => {
-        //   alert(this.state.email_address);
+        if (permissionResult.granted === false) {
+            Alert.alert(
+                'Permission',
+                'Permission to access camera roll is required!'
+                ,[
+                    {text: 'Okay'}
+                ]
+            );
+            return;
+        }
+
+        let pickerResult = await ImagePicker.launchImageLibraryAsync();
+        if (pickerResult.cancelled === true) {
+            return;
+        }
+        this.setState({
+            selectedImage: pickerResult.uri
+        },()=>this.uploadPhoto())
     }
-    navigatee = () => {
-        this.props.navigation.navigate("RegisterScreen")
-
-    }
-
     render() {
         const {
             isReady,
@@ -131,8 +255,8 @@ class Profile extends React.Component {
                                     <Avatar.Image size={130} source = {{uri : image}} />
                                 </View>
 
-                                <TouchableOpacity style={{marginTop: "10%"}}>
 
+                                    <TouchableOpacity onPress={this.openImagePickerAsync} style={styles.button}>
                                     <Image source={require('./../../../assets/image/icons-edit.png')}
                                            style={{width: 25, height: 25, resizeMode: "cover", marginLeft: 10}}/>
                                 </TouchableOpacity>
@@ -274,7 +398,20 @@ class Profile extends React.Component {
                             </TouchableOpacity>
 
                         </View>
-
+                        <View style={{flexDirection: "row", flex: 1, marginBottom: 50}}>
+                        <TouchableOpacity
+                            style={{marginTop: 10}}
+                            onPress={this.updateProfileInfo}
+                        >
+                            <LinearGradient
+                                start={{x: 0, y: 0}}
+                                end={{x: 1, y: 0}}
+                                colors={['#256B9B', '#3FB0F1', '#3FB0F1']}
+                                style={styles.linearGradient1}>
+                                <Text style={styles.buttonText}>UPDATE</Text>
+                            </LinearGradient>
+                        </TouchableOpacity>
+                        </View>
 
                         {/*<View style={{flexDirection: "row", flex: 1, marginBottom: 50}}>*/}
 
@@ -365,12 +502,16 @@ const styles = StyleSheet.create({
         // marginLeft: 50,
     },
 
-    linearGradient: {
+    linearGradient1: {
         // flex: 1,
         paddingLeft: 15,
         paddingRight: 15,
         borderRadius: 35,
-        margin: 15,
+        marginLeft: 10,
+        marginRight: 10, marginBottom: 10,
+        width: 120,
+        alignItems: "center",
+        justifyContent: "center"
     },
     buttonText: {
         fontSize: 18,
@@ -382,4 +523,18 @@ const styles = StyleSheet.create({
     },
 });
 
-export default Profile
+const mapStateToProps = state => {
+    return {
+        dictionaries: state.DictionaryReducer.dictionaries,
+        user: state.UserReducer.user,
+        userImage: state.UserReducer.userImage,
+    };
+};
+
+export default connect(
+    mapStateToProps,
+    {
+        updateUserPicture: actions.updateUserPicture,
+        updateProfile: actions.updateProfile,
+    },
+)(Profile);

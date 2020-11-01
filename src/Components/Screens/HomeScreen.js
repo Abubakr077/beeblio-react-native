@@ -1,8 +1,6 @@
 
-import React, { Component } from 'react';
-import { StyleSheet, Text, View, Image, ImageBackground, Dimensions } from 'react-native';
-import { Icon, Drawer } from "native-base";
-import { DrawerItems } from 'react-navigation';
+import React from 'react';
+import {Text, View, Image, Dimensions, AsyncStorage,Alert } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 
 
@@ -10,10 +8,12 @@ import DashBoard from './Drawer/DashBoard';
 import Search from './Drawer/Search';
 import Setting from './Drawer/Setting';
 import Collection from './Drawer/Collection';
-import {connect} from "react-redux";
-import * as actions from '../../Store/Actions/UserActions';
 import * as NavigationService from '../../NavigationService'
-import {LOGOUT} from "../../Store/Actions/type";
+
+import Header from "../SeperateComponents/Header";
+import {connect} from "react-redux";
+import * as actions from "../../Store/Actions/AuthActions";
+import * as actionsUsers from "../../Store/Actions/UserActions";
 
 
 const LazyPlaceholder = ({ route }) => (
@@ -22,105 +22,125 @@ const LazyPlaceholder = ({ route }) => (
   </View>
 );
 
-class HomeScreen extends React.Component {
+class HomeScreen extends React.PureComponent {
   static navigationOptions = ({ navigation }) => ({
-    drawerIcon: ({ tintColor }) => (
-      <View>
-        <Icon
-          name="home"
-          size={30}
-          color='white'
-        />
-      </View>
-    ),
-    headerTitle: "Home",
-    headerLeft:
-      <View style={{ paddingLeft: 16 }}>
-        <Icon
-          name="md-menu"
-          size={30}
-          color='white'
-          onPress={() => navigation.toggleDrawer()} />
-      </View>,
-    })
-
-  constructor(props) {
-    super(props);
-    this.updateUser();
-  }
-    updateUser = () => {
-        const {getUser,getUserPicture} = this.props;
+      header: (props) => <Header navigation={navigation}  previous={false}/>
+  })
+    componentDidMount() {
+        const {getUser, getUserPicture} = this.props;
         this.setState({isLoadingContent: true});
         getUser({
             onError: (error) => {
-                alert(error);
-                this.setState({isLoadingContent: false, progress: 0});
+                Alert.alert(
+                    'Error',
+                    error
+                    , [
+                        {text: 'Okay'}
+                    ]
+                );
+                this.setState({isLoadingContent: false});
             },
             onSuccess: () => {
-                this.setState({isLoadingContent: false, isReady: true});
+                this.setState({
+                    isReady: true
+                })
             }
         });
         getUserPicture({
             onError: (error) => {
-                alert(error);
-                this.setState({isLoadingContent: false, progress: 0});
+                Alert.alert(
+                    'Error',
+                    error
+                    , [
+                        {text: 'Okay'}
+                    ]
+                );
+                this.setState({isLoadingContent: false});
             },
             onSuccess: () => {
-                this.setState({isLoadingContent: false, isReady: true});
+                this.setState({
+                    isReady: true
+                })
             }
         });
-
     }
-  state = {
-    index: 2,
-    routes: [
-      {
-        key: 'first', title: 'Collection',
-        icon: <Image style={{
-          height: 20,
-          width: 20,
-        }} source={require('../../../assets/image/collection.png')} />
-      },
-      {
-        key: 'second', title: 'Search',
-        icon: <Image style={{
-          height: 20,
-          width: 20,
-        }} source={require('../../../assets/image/searchh.png')} />
-      },
-      {
-        key: 'third', title: 'DashBoard',
-        icon: <Image style={{
-          height: 40,
-          width: 40,
-        }} source={require('../../../assets/image/page.png')} />
-      },
-      {
-        key: 'fourth', title: 'Setting',
-        icon: <Image style={{
-          height: 20,
-          width: 20,
-        }} source={require('../../../assets/image/gear.png')} />
-      },
-      {
-        key: 'fifth', title: 'Logout',
-        icon: <Image style={{
-          height: 20,
-          width: 20,
-        }} source={require('../../../assets/image/logoutt.png')} />
-      },
+    static getDerivedStateFromProps(props, state) {
+        if (props.user !== state.user) {
+            return {user: props.user};
+        }
+        if (props.userImage !== state.userImage) {
+            return {userImage: props.userImage};
+        }
 
-    ],
+        return null;
+    }
+
+    constructor(props) {
+    super(props);
+    this.state = {
+        index: 2,
+        routes: [
+            {
+                key: 'first', title: 'Collection',
+                icon: <Image style={{
+                    height: 20,
+                    width: 20,
+                }} source={require('../../../assets/image/collection.png')} />
+            },
+            {
+                key: 'second', title: 'Search',
+                icon: <Image style={{
+                    height: 20,
+                    width: 20,
+                }} source={require('../../../assets/image/searchh.png')} />
+            },
+            {
+                key: 'third', title: 'DashBoard',
+                icon: <Image style={{
+                    height: 40,
+                    width: 40,
+                }} source={require('../../../assets/image/page.png')} />
+            },
+            {
+                key: 'fourth', title: 'Setting',
+                icon: <Image style={{
+                    height: 20,
+                    width: 20,
+                }} source={require('../../../assets/image/gear.png')} />
+            },
+            {
+                key: 'fifth', title: 'Logout',
+                icon: <Image style={{
+                    height: 20,
+                    width: 20,
+                }} source={require('../../../assets/image/logoutt.png')} />
+            },
+
+        ],
+    }
   }
-
-  componentDidMount = () => {
-
-    // const Logout = new logoutt();
-    // Logout.navigate_data(this.props.navigation);
-  }
-
 
   _renderLazyPlaceholder = ({ route }) => <LazyPlaceholder route={route} />;
+    logoutUser = async () => {
+        try {
+            const keys = await AsyncStorage.getAllKeys();
+            await AsyncStorage.multiRemove(keys);
+        } catch (error) {
+            console.error('Error clearing app data.');
+        }
+        NavigationService.navigate('MainLogin')
+
+        // props.dispatch(logout({
+        //     token: props.user,
+        //     onError: (error) => {
+        //         console.log({error});
+        //         NavigationService.navigateAndResetStack('MainLogin')
+        //     },
+        //     onSuccess: () => {
+        //         NavigationService.navigateAndResetStack('MainLogin')
+        //     }
+        // }))
+    };
   render() {
 
     return (
@@ -133,9 +153,23 @@ class HomeScreen extends React.Component {
             second: Search,
             third: DashBoard,
             fourth: Setting,
-            fifth: Setting,
+            fifth: Setting
           })}
-          onIndexChange={index => this.setState({ index })}
+          onIndexChange={index =>
+          {
+              this.setState({ index })
+              if (index===4){
+                  Alert.alert(   // Shows up the alert without redirecting anywhere
+                      'Confirmation required'
+                      ,'Do you really want to logout?'
+                      ,[
+                          {text: 'Accept', onPress: () =>  this.logoutUser()},
+                          {text: 'Cancel'}
+                      ]
+                  );
+              }
+          }
+          }
           initialLayout={{ width: Dimensions.get('window').width }}
           // lazy ={true}
           renderTabBar={props => (
@@ -148,7 +182,7 @@ class HomeScreen extends React.Component {
               style={{ backgroundColor: "#fff", width: '100%' }}
               // scrollEnabled={true}
               renderIcon={({ route, focused, color }) => (
-                <View style={{ paddingTop: route.key === 'fifth' ? 8 : 0 }}>{route.icon}</View>
+                <View style={{ paddingTop: route.key === 'fifth' ? 0 : 0 }}>{route.icon}</View>
               )}
               renderLabel={({ route, focused, color }) => (
                 <Text
@@ -170,32 +204,17 @@ class HomeScreen extends React.Component {
   }
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        flexDirection: "column"
-    },
-    backgroundImage: {
-        flex: 1,
-        resizeMode: 'cover', // or 'stretch'
-        justifyContent: 'center',
-    },
-    contents: {
-        justifyContent: 'center',
-        alignContent: 'center'
-    },
-
-});
 const mapStateToProps = state => {
     return {
         user: state.UserReducer.user,
+        userImage: state.UserReducer.userImage,
     };
 };
 
 export default connect(
     mapStateToProps,
     {
-        getUser: actions.getUser,
-        getUserPicture: actions.getUserPicture,
-    },
+        getUser: actionsUsers.getUser,
+        getUserPicture: actionsUsers.getUserPicture
+    }
 )(HomeScreen);

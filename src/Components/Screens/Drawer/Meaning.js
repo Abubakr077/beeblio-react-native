@@ -1,100 +1,138 @@
-import React, { Component,useCallback } from 'react';
-import { StyleSheet, Text, View, Image, ImageBackground, ScrollView, Dimensions, TouchableOpacity, Button } from 'react-native';
-import { Container, Header,Content,Icon } from 'native-base';
-import { Col, Row, Grid } from 'react-native-easy-grid';
+import React from 'react';
+import {
+    StyleSheet,
+    Text,
+    View,
+    ScrollView,
+    AsyncStorage, Alert
+} from 'react-native';
 
-import {LinearGradient} from "expo-linear-gradient";
-class Meaning extends React.Component {
+import {connect} from "react-redux";
+import * as actions from "../../../Store/Actions/ConetentActions";
+import Header from "../../SeperateComponents/Header";
+import OxfordDictionary from "../WordMeaning/OxfordDictionary";
+import Loader from "../../SeperateComponents/Loader";
+import NotFound from "../../SeperateComponents/NotFound";
+import WordsApi from "../WordMeaning/WordsApi";
+import TwinWord from "../WordMeaning/TwinWord";
+
+class Meaning extends React.PureComponent {
     constructor(props) {
         super(props);
         this.state = {
-            search: ''
+            user: '',
+            dictionaryName:'',
+            isLoadingContent: true,
+            word:'',
+            wordInfo:null
         };
     }
-    static navigationOptions = ({ navigation }) => ({
-        drawerIcon: ({ tintColor }) => (
-            <Icon
-                name="home"
-                size={30}
-                color='white'
-            />
-        ),
-        headerTitle: "Content",
-        headerLeft:
-            <View style={{ paddingLeft: 16 }}>
-                <Icon
-                    name="md-menu"
-                    size={30}
-                    color='white'
-                    onPress={() => navigation.toggleDrawer()} />
+    componentDidMount() {
+        const word = this.props.navigation.state.params;
+        AsyncStorage.getItem('user_obj').then((user) => {
+            const tempUSer = JSON.parse(user);
+            this.setState({
+                isLoadingContent: false,
+                user: tempUSer,
+                dictionaryName: tempUSer.dictionary.name,
+                word: word
+            },()=>{
+                this.updateWordInfo();
+            })
+        })
+    }
 
-            </View>,
-    })
+    updateWordInfo () {
+        const {getWordInfo} = this.props;
+        const word = this.props.navigation.state.params;
+        this.setState({isLoadingContent: true,word:word});
+
+        getWordInfo({
+            onError: (error) => {
+                Alert.alert(
+                    'Error',
+                    error
+                    ,[
+                        {text: 'Okay'}
+                    ]
+                );
+                this.setState({isLoadingContent: false});
+            },
+            onSuccess: () => {
+                this.setState({isLoadingContent: false});
+            }, data:{
+                dicName: this.state.dictionaryName,
+                word: word
+            }
+        });
+    }
+    static getDerivedStateFromProps(props, state) {
+        if (props.wordInfo !== state.wordInfo) {
+            return {wordInfo: props.wordInfo};
+        }
+        return null;
+    }
+
     render() {
+        const {dictionaryName,wordInfo,isLoadingContent,word} = this.state;
         return (
-            <ScrollView>
-                <Container style={{backgroundColor:"white"}}>
-                    <Grid style={{backgroundColor:"white"}}>
-                        <Col style={{ backgroundColor: 'white',height: 200,marginTop:30 }}>
-                            <Text style={{ fontSize: 42,fontWeight: 'bold',color: "#4976b8", textAlign: "left", marginHorizontal: 20, marginTop: 20 }}>
-                                Word: </Text>
-                            <Text style={{ fontSize: 22,fontWeight: 'bold',color: "#2f3133", textAlign: "left", marginHorizontal: 20, marginTop: 10 }}>
-                                Adverb  </Text>
-                            <Text style={{ fontSize: 22,color: "#2f3133", textAlign: "left", marginHorizontal: 20, marginTop: 10 }}>
-                                [ˈlidərəlē] (American English) </Text>
-                            <Text style={{ fontSize: 22,color: "#2f3133", textAlign: "left", marginHorizontal: 20, marginTop: 10 }}>
-                                [ˈlɪdərəli] (American English)</Text>
+            <View style={{flex: 1}}>
+            <Header previous={true}  />
+            <ScrollView style={{backgroundColor: 'white', marginTop: 10,marginBottom:30}}>
+                    <Text style={{
+                        fontSize: 42,
+                        fontWeight: 'bold',
+                        color: "#4976b8",
+                        textAlign: "left",
+                        marginHorizontal: 20,
+                        marginTop: 20
+                    }}>
+                        {word} </Text>
+                {isLoadingContent?<Loader/>:<View style={{backgroundColor: "white"}}>
+                    <View style={{backgroundColor: "white"}}>
+                        <View style={{
+                            textAlign: "left",
+                            marginHorizontal: 20,
+                        }}>
 
-                            <TouchableOpacity style={styles.button} onPress={()=>{alert("you clicked me")}}>
-                                <Image source={require('./../../../../assets/image/sou.png')}
-                                style={{marginRight:15,height:30,width:30}}/>
-                                <Text style={{marginTop:-25, color:"#4976b8", textAlign: "right",fontWeight: "bold",fontSize:18}}>Play Audio</Text>
-                            </TouchableOpacity>
+                            {((dictionaryName === 'WORDSAPI' && wordInfo) &&
+                                Object.entries(wordInfo).length > 0) &&
+                            <WordsApi wordsApiResult={wordInfo} />
+                            }
 
 
-                            <Text style={{ fontSize: 22,color: "#2f3133", textAlign: "left", marginHorizontal: 20, marginTop: 10 }}>
-                                [ˈlitrəlē] (American English) </Text>
 
-                            <Text style={{ fontSize: 22,color: "#2f3133", textAlign: "left", marginHorizontal: 20, marginTop: 10 }}>
-                                [ˈlɪtrəli] (American English)</Text>
-                            <TouchableOpacity style={styles.button} onPress={()=>{alert("you clicked me")}}>
-                                <Image source={require('./../../../../assets/image/sou.png')}
-                                       style={{marginRight:15,height:30,width:30}}/>
-                                <Text style={{marginTop:-25, color:"#4976b8", textAlign: "right",fontWeight: "bold",fontSize:18}}>Play Audio</Text>
-                            </TouchableOpacity>
-                            <Text style={{ fontSize: 22, fontWeight: "bold",color: "#2f3133", textAlign: "left", marginHorizontal: 20, marginTop: 10 }}>
-                                Inflections </Text>
-                            <Text style={{ fontSize: 20,color: "#2f3133", textAlign: "left", marginHorizontal: 20, marginTop: 10 }}>
-                                Word </Text>
-                            <Text style={{ fontSize: 20, fontStyle:"italic",color: "#2f3133", textAlign: "left", marginHorizontal: 20, marginTop: 10 }}>
-                                Definition 1: </Text>
-                            <Text style={{ fontSize: 20,color: "#2f3133", textAlign: "left", marginHorizontal: 20, marginTop: 10 }}>
-                                in a literal manner or sense; exactly </Text>
-                             <Text style={{ fontSize: 20,color: "#2f3133", textAlign: "left", marginHorizontal: 20, marginTop: 10 }}>
-                                in literal manner or sense (short def) </Text>
-                            <Text style={{ fontSize: 22, fontWeight:"bold",color: "#2f3133", textAlign: "left", marginHorizontal: 20, marginTop: 10 }}>
-                                Examples: </Text>
-                            <Text style={{ fontSize: 20,color: "#2f3133", textAlign: "left", marginHorizontal: 20, marginTop: 10 }}>
-                            the driver took it literally when asked to go straight across the traffic circle
-                                tiramisu, literally translated “pick me up.” </Text>
-                        </Col>
-                    </Grid>
-                </Container>
+                            {(dictionaryName === 'TWINWORD' && wordInfo) &&
+                            <TwinWord twinResult={wordInfo} />
+                            }
+
+
+                            {(dictionaryName === 'OXFORDDICTIONARIES' && wordInfo) &&
+                            <OxfordDictionary oxfordResult={wordInfo} />
+                            }
+                            { !wordInfo &&
+                            <NotFound/>
+                            }
+                        </View>
+                    </View>
+                </View>}
             </ScrollView>
+            </View>
         );
     }
 }
+
 const styles = StyleSheet.create({
-    container:{
+    container: {
         flexDirection: "row",
-        backgroundColor:"black",
-        flex:1,
+        backgroundColor: "black",
+        flex: 1,
 
     },
 
     backgroundImage: {
         // flex: 1.5,
-        flexDirection:"column",
+        flexDirection: "column",
         resizeMode: "center",
         //backgroundColor:"white",
 
@@ -115,7 +153,7 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         marginRight: 10, marginTop: 20,
         width: 120,
-        height:40,
+        height: 40,
         alignItems: "center",
         justifyContent: "center",
 
@@ -124,14 +162,14 @@ const styles = StyleSheet.create({
         backgroundColor: '#c0c5cc',
         borderRadius: 10,
         padding: 10,
-        marginTop:10,
+        marginTop: 10,
         marginBottom: 10,
-        shadowOffset: { width: 0, height: 5 },
+        shadowOffset: {width: 0, height: 5},
         shadowRadius: 10,
         shadowOpacity: 0.35,
         marginLeft: 20,
-        height:50,
-        width:150,
+        height: 50,
+        width: 150,
     },
     buttonText: {
         fontSize: 15,
@@ -149,4 +187,17 @@ const styles = StyleSheet.create({
     },
 });
 
-export default Meaning
+
+const mapStateToProps = state => {
+    return {
+        wordInfo: state.ContentReducer.wordInfo
+
+    };
+};
+
+export default connect(
+    mapStateToProps,
+    {
+        getWordInfo: actions.getWordInfo,
+    },
+)(Meaning);

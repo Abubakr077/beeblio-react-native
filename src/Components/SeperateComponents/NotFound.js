@@ -2,7 +2,7 @@ import React from 'react'
 import Spinner from '../../../assets/spinner.svg';
 import {View,Text} from "react-native";
 import Image from 'react-native-remote-svg'
-const Loader = () => {
+const NotFound = () => {
     return (
         <View style={{
             width: '100%',
@@ -12,18 +12,18 @@ const Loader = () => {
             alignItems: 'center',
         }}>
             {/*<Spinner width={120} height={40}/>*/}
-            {/*<Text >Loading...</Text>*/}
-            <Image
+            <Text
                 style={{
-                    width: 50,
-                    height: 50,
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
+                    fontSize: 20,
+                    fontWeight: 'bold',
+                    color: "#4976b8",
+                    textAlign: "left",
+                    marginHorizontal: 20,
+                    marginTop: 20
                 }}
-                source={Spinner} alt="spinner"/>
+            >Not Found...</Text>
         </View>
     )
 }
 
-export default Loader
+export default NotFound

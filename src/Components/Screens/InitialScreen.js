@@ -11,7 +11,7 @@ const width = Math.round(Dimensions.get('window').width);
 const height = Math.round(Dimensions.get('window').height) + 10;
 import Carousel from 'react-native-looped-carousel';
 
-class InitialScreen extends React.Component {
+class InitialScreen extends React.PureComponent {
     constructor(props) {
         super(props);
         this.state = {
@@ -23,10 +23,11 @@ class InitialScreen extends React.Component {
             ],
             size: {width, height},
         };
+        this.navigate = this.navigate.bind(this);
     }
 
 
-    navigate = () => {
+    navigate() {
         AsyncStorage.setItem('initial', 'true');
         this.props.navigation.navigate("MainLogin");
     }
@@ -69,7 +70,7 @@ class InitialScreen extends React.Component {
                                     justifyContent: "center",
                                     marginHorizontal: 15
                                 }}
-                                                  onPress={() => this.navigate()}>
+                                                  onPress={this.navigate}>
                                     <Text style={{color: "black", fontSize: 18, padding: 10}}>GET STARTED</Text>
 
                                 </TouchableOpacity>
@@ -82,7 +83,7 @@ class InitialScreen extends React.Component {
                     </View>
                     <View style={this.state.size}>
                         <ImageBackground source={require('../../../assets/image/ps2.jpg')}
-                                         style={{width: width * 1, height: height * 1,}}>
+                                         style={{width: width, height: height,}}>
                             <View style={{flex: 4, justifyContent: "center", alignItems: "center"}}>
                                 <Text style={{color: "white", fontSize: 25, marginTop: 35}}>As your vocabulary </Text>
                                 <Text style={{color: "white", fontSize: 25}}>grows, Beebl.io </Text>
@@ -99,7 +100,7 @@ class InitialScreen extends React.Component {
                                     justifyContent: "center",
                                     marginHorizontal: 15
                                 }}
-                                                  onPress={() => this.navigate()}>
+                                                  onPress={this.navigate}>
                                     <Text style={{color: "black", fontSize: 18, padding: 10}}>GET STARTED</Text>
 
                                 </TouchableOpacity>
@@ -112,7 +113,7 @@ class InitialScreen extends React.Component {
                     </View>
                     <View style={this.state.size}>
                         <ImageBackground source={require('../../../assets/image/ps3.jpg')}
-                                         style={{width: width * 1, height: height * 1,}}
+                                         style={{width: width, height: height,}}
                         >
                             <View style={{flex: 4, justifyContent: "center", alignItems: "center"}}>
                                 <Text style={{color: "white", fontSize: 25, marginTop: 35}}>As your vocabulary </Text>
@@ -130,7 +131,7 @@ class InitialScreen extends React.Component {
                                     justifyContent: "center",
                                     marginHorizontal: 15
                                 }}
-                                                  onPress={() => this.navigate()}>
+                                                  onPress={this.navigate}>
                                     <Text style={{color: "black", fontSize: 18, padding: 10}}>GET STARTED</Text>
 
                                 </TouchableOpacity>

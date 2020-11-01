@@ -6,23 +6,23 @@ import {
     Image,
     ImageBackground,
     ScrollView,
-    Dimensions,
-    TouchableOpacity,
+    Dimensions,Alert,
     FlatList, RefreshControl, AsyncStorage
 } from 'react-native';
-import {Icon, Drawer} from "native-base";
-import {DrawerItems} from 'react-navigation';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 import {Searchbar} from 'react-native-paper';
-import {ProgressChart} from "react-native-chart-kit";
-
 const screenWidth = Dimensions.get("window").width;
 import ProgressCircle from 'react-native-progress-circle'
 import {LinearGradient} from 'expo-linear-gradient';
 import {connect} from "react-redux";
 import * as actions from "../../../Store/Actions/ConetentActions";
+import Header from "../../SeperateComponents/Header";
+import Loader from "../../SeperateComponents/Loader";
+import {LOGO_CONTENT_SOURCE_MAP} from "../../../Helpers/constants";
+import * as NavigationService from "../../../NavigationService";
 
 
-class Search extends React.Component {
+class Search extends React.PureComponent {
 
     constructor(props) {
         super(props);
@@ -30,52 +30,48 @@ class Search extends React.Component {
             query: '',
             searches: [],
             isLoadingContent: true,
-            isDetails: false,
             searchItem: '',
-            statics:''
+            statics: ''
         };
-        this.updateSearches();
+        this.onRefresh = this.onRefresh.bind(this);
+        this.updateSearches = this.updateSearches.bind(this);
+        this.search = this.search.bind(this);
+
+    }
+
+    static navigationOptions = ({navigation}) => ({
+        header: (props) => <Header navigation={navigation} previous={false}/>
+    })
+    onRefresh(){
+        this.setState({searches: []});
         AsyncStorage.getItem('statics').then((user) => {
             this.setState({
                 statics: JSON.parse(user)
             })
         })
-    }
-
-    static navigationOptions = ({navigation}) => ({
-        drawerIcon: ({tintColor}) => (
-            <Icon
-                name="home"
-                size={30}
-                color='white'
-            />
-        ),
-        headerTitle: "Home",
-        headerLeft:
-            <View style={{paddingLeft: 16}}>
-                <Icon
-                    name="md-menu"
-                    size={30}
-                    color='white'
-                    onPress={() => navigation.toggleDrawer()}/>
-
-            </View>,
-    })
-
-    onRefresh() {
-        //Clear old data of the list
-        this.setState({searches: []});
-        //Call the Service to get the latest data
         this.updateSearches();
     }
 
-    updateSearches = () => {
+    componentDidMount() {
+        // this.focusListener = this.props.navigation.addListener('didFocus', this.onRefresh)
+        this.onRefresh();
+    }
+    // componentWillUnmount() {
+    //     this.focusListener.remove();
+    // }
+    updateSearches () {
         const {getContentSearches} = this.props;
 
         this.setState({isLoadingContent: true});
         getContentSearches({
             onError: (error) => {
-                alert(error);
+                Alert.alert(
+                    'Error',
+                    error
+                    ,[
+                        {text: 'Okay'}
+                    ]
+                );
                 this.setState({isLoadingContent: false});
             },
             onSuccess: () => {
@@ -83,12 +79,26 @@ class Search extends React.Component {
             }
         });
     }
-    search = () => {
+    getLogo = (search) => {
+        let tempURL = null;
+        const url = search?.content?.url ? search?.content?.url : search?.content?.content_link;
+        if (!url) {
+            return false;
+        }
+        Object.entries(LOGO_CONTENT_SOURCE_MAP).filter(e => {
+            if (url.match(e[0])) {
+                tempURL = e[1];
+                return e[1]
+            }
+        });
+        return tempURL;
+    }
+    search ()  {
         const {doSearch} = this.props;
 
         const {query} = this.state;
         if (!query) {
-            return
+            this.onRefresh();
         }
         this.setState({isLoadingContent: true});
         doSearch({
@@ -97,37 +107,85 @@ class Search extends React.Component {
                 this.setState({isLoadingContent: false});
             },
             onError: (message) => {
-                alert(message);
+                Alert.alert(
+                    'Error',
+                    message
+                    ,[
+                        {text: 'Okay'}
+                    ]
+                );
                 this.setState({isLoadingContent: false});
             }
         });
     }
-    details = (contentId) => {
-        const {getDetails} = this.props;
-
+    details (contentId) {
         if (!contentId) {
-            return alert('Content id is not given')
+            return Alert.alert(
+                'Error',
+                'Content id is not given'
+                ,[
+                    {text: 'Okay'}
+                ]
+            );
+        }
+        NavigationService.navigate("Details", contentId);
+    }
+    Reaction (contentId)  {
+        const {doReact} = this.props;
+
+        const data = {
+            contentId: contentId,
+            domain: "CONTENT",
+            event: "LIKE"
+        }
+        if (!contentId) {
+            return Alert.alert(
+                'Error',
+                'Content id is not given'
+                ,[
+                    {text: 'Okay'}
+                ]
+            );
+
         }
         // this.setState({isLoadingContent: true});
-        getDetails({
-            contentId,
+        doReact({
+            data,
             onSuccess: () => {
-                this.setState({isDetails: true});
+                Alert.alert(
+                    'Success',
+                    'The action was successfully completed'
+                    ,[
+                        {text: 'Okay'}
+                    ]
+                );
+                // this.setState({isReact:true});
             },
             onError: (message) => {
-                alert(message);
-                this.setState({isDetails: false});
+                Alert.alert(
+                    'Error',
+                    message
+                    ,[
+                        {text: 'Okay'}
+                    ]
+                );
+                // this.setState({isReact:true});
             }
         });
     }
 
-    componentWillReceiveProps(nextProps, nextContext) {
-        if (nextProps.searches !== this.state.searches) {
-            this.setState({searches: nextProps.searches});
+    static getDerivedStateFromProps(props, state) {
+        if (props.searches !== state.searches) {
+            return {
+                searches: props.searches
+            };
         }
-        if (nextProps.searchItem !== this.state.searchItem) {
-            this.setState({searchItem: nextProps.searchItem});
+        if (props.searchItem !== state.searchItem) {
+            return {
+                searchItem: props.searchItem
+            };
         }
+        return null;
     }
 
     render() {
@@ -135,12 +193,10 @@ class Search extends React.Component {
             searches,
             isLoadingContent,
             searchItem,
-            isDetails,
             statics
         } = this.state;
         return (
             <View style={styles.container}>
-                {!isDetails ?
                     <ScrollView contentContainerStyle={{flexGrow: 1}}>
 
                         {/* <View style={{ flex: 1.5, marginBottom: 15 }}> */}
@@ -158,15 +214,15 @@ class Search extends React.Component {
 
                             <View style={{marginHorizontal: 15, marginTop: 30, marginBottom: "32%"}}>
 
-                              <Searchbar
-                                  placeholder="Search"
-                                  onChangeText={(query) => {
-                                    this.setState({query}, () => {
-                                      this.search();
-                                    });
-                                  }}
-                                  value={this.state.query}
-                              />
+                                <Searchbar
+                                    placeholder="Search"
+                                    onChangeText={(query) => {
+                                        this.setState({query}, () => {
+                                            this.search();
+                                        });
+                                    }}
+                                    value={this.state.query}
+                                />
                             </View>
 
                         </ImageBackground>
@@ -191,7 +247,11 @@ class Search extends React.Component {
                                     bgColor="#fff"
                                 >
                                 </ProgressCircle>
-                                <Text style={{fontSize: 18, fontWeight: "bold", marginTop: 15}}>{statics?statics.totalUrlSearched:0}</Text>
+                                <Text style={{
+                                    fontSize: 18,
+                                    fontWeight: "bold",
+                                    marginTop: 15
+                                }}>{statics ? statics.totalUrlSearched : 0}</Text>
                                 <Text style={{fontSize: 16, marginTop: 5}}>{'URL Filtered'}</Text>
                             </View>
                             <View style={{justifyContent: "center", alignItems: "center", flex: 1}}>
@@ -206,7 +266,11 @@ class Search extends React.Component {
                                     bgColor="#fff"
                                 >
                                 </ProgressCircle>
-                                <Text style={{fontSize: 18, fontWeight: "bold", marginTop: 15}}>{statics?statics.totalContentSearched:0}</Text>
+                                <Text style={{
+                                    fontSize: 18,
+                                    fontWeight: "bold",
+                                    marginTop: 15
+                                }}>{statics ? statics.totalContentSearched : 0}</Text>
                                 <Text style={{fontSize: 16, marginTop: 5}}>{'Texts Filtered'}</Text>
 
                             </View>
@@ -222,24 +286,24 @@ class Search extends React.Component {
                             marginBottom: 20
                         }}>{'RESULT'}</Text>
 
-                        {isLoadingContent ? <Text>loading...</Text> : <FlatList
+                        {isLoadingContent ?
+                            <Loader/> : <FlatList
                             data={searches}
                             showsVerticalScrollIndicator={true}
                             keyExtractor={(item, index) => index.toString()}
                             renderItem={({item}) =>
-
                                 <View style={{
                                     backgroundColor: "#fff",
                                     marginLeft: 5,
                                     marginRight: 5,
                                     flexDirection: "row",
                                 }}>
-
-                                    <Image source={{uri: item.content.reference_image_link}}
-                                           style={{height: 120, width: 100, margin: 5}}>
-
-                                    </Image>
-
+                                    <Image
+                                        resizeMode={'cover'}
+                                        // source={{uri: this.getLogo(item)?this.getLogo(item):item.content.reference_image_link?item.content.reference_image_link:item.content.url?URLPlaceHolder : ContentPlaceHolder}}
+                                        source={{uri: item.content.reference_raster_image_link?item.content.reference_raster_image_link:this.getLogo(item)?this.getLogo(item):item.content.reference_image_link}}
+                                        // source={{uri: item.content.reference_image_link}}
+                                        style={{height: 120, width: 100, margin: 5}}/>
                                     <View style={{flexDirection: "column"}}>
                                         <Text style={{
                                             fontSize: 18,
@@ -248,36 +312,63 @@ class Search extends React.Component {
                                             textAlign: "center",
                                             marginLeft: 10,
                                             marginTop: 15
-                                        }}>{item.content.name ? item.content.name : 'Internet Content'}</Text>
-                                        <Text style={{
+                                        }}>{item?.content?.name ? item?.content?.name.substr(0, 16) : this.getLogo(item) ? 'News Article' : 'Internet Content'}</Text>
+                                        <Text numberOfLines={1} style={{
                                             fontSize: 16,
                                             color: "black",
-                                            textAlign: "center",
+                                            textAlign: "left",
                                             marginLeft: 10,
                                             marginTop: 5
-                                        }}>{item.content.content_body.substr(0, 10)}</Text>
-
+                                        }}>
+                                            {item.content.content_body.substr(0, 10)}
+                                        </Text>
+                                        <View style={{
+                                            flex: 1,
+                                            flexDirection: "row",
+                                            marginTop: 5,
+                                            marginLeft: 10,
+                                        }}>
+                                            <TouchableOpacity
+                                                onPress={this.Reaction.bind(this,item.content_id)}
+                                            >
+                                                <Image source={require('./../../../../assets/image/like.png')}
+                                                       style={{width: 20, height: 20, resizeMode: "cover"}}/>
+                                            </TouchableOpacity>
+                                            {/*<TouchableOpacity>*/}
+                                            {/*    <Image source={require('./../../../../assets/image/dislike.png')}*/}
+                                            {/*           style={{*/}
+                                            {/*               width: 20,*/}
+                                            {/*               height: 20,*/}
+                                            {/*               marginLeft: 5,*/}
+                                            {/*               resizeMode: "cover",*/}
+                                            {/*           }}/>*/}
+                                            {/*</TouchableOpacity>*/}
+                                        </View>
                                     </View>
 
 
                                     <View style={{flex: 1, alignItems: "flex-end", flexDirection: "column"}}>
 
                                         <TouchableOpacity
-                                            style={{marginTop: 10}}
-                                            onPress={()=>this.details(item.content_id)}
+                                            style={{marginTop: 5}}
+                                            onPress={this.details.bind(this,item.content_id)}
                                         >
                                             <LinearGradient
                                                 start={{x: 0, y: 0}}
                                                 end={{x: 1, y: 0}}
                                                 colors={['#256B9B', '#3FB0F1', '#3FB0F1']}
                                                 style={styles.linearGradient1}>
-                                                <Text style={styles.buttonText}>VIEW</Text>
+                                                <Text style={styles.buttonText}>VIEW DETAILS</Text>
                                             </LinearGradient>
                                         </TouchableOpacity>
 
 
                                         <TouchableOpacity
-                                            style={{marginTop: 10}}>
+                                            style={{marginTop: 5}}
+                                            onPress={() => {
+                                                NavigationService.navigate("MainLogin", item.content.url ? item.content.url : item.content.content_link);
+                                            }}
+                                        >
                                             <LinearGradient
                                                 start={{x: 0, y: 0}}
                                                 end={{x: 1, y: 0}}
@@ -301,10 +392,7 @@ class Search extends React.Component {
 
 
                         {/* </View> */}
-                    </ScrollView> :
-                    <Text>details page{searchItem.content.authors}</Text>
-                }
-
+                    </ScrollView>
             </View>
         );
     }
@@ -370,5 +458,6 @@ export default connect(
         getContentSearches: actions.getContentSearches,
         doSearch: actions.doSearch,
         getDetails: actions.getDetails,
+        doReact: actions.doReact,
     },
 )(Search);

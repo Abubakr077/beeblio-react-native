@@ -50,7 +50,7 @@ const login = options => async dispatch => {
         'Accept': 'application/json'
       }
     });
-    AsyncStorage.setItem('user', user);
+    await AsyncStorage.setItem('user', user);
 
     dispatch({
       type: actions.LOGIN,
@@ -75,8 +75,8 @@ const login = options => async dispatch => {
 const getContent = options => async dispatch => {
   const { type, onSuccess, onError } = options;
   try {
-
-    const { data: res } = await axios.get(`${APIModel.HOST}/curated-contents?curatedContentType=${type}&page=0&offset=0&limit=20&fields=id,type,url,contentType,contentHash,curatedContentType,mainGenres,subGenres,name,summary,country,sourceLink,contentLink,referenceImageLink,publicationDate,establishmentDate,rssFeeds,isbn,authors,publisher,serialNb,rate,isPremium`, {
+    // https://capi-test.beebl.io/curated-contents?curatedContentType=newspaper&offset=0&limit=20&fields=id,type,url,contentType,contentHash,curatedContentType,mainGenres,subGenres,name,summary,country,sourceLink,contentLink,referenceImageLink,referenceRasterImageLink,publicationDate,establishmentDate,rssFeeds,isbn,authors,publisher,serialNb,rate,isPremium
+    const { data: res } = await axios.get(`${APIModel.HOST}/curated-contents?curatedContentType=${type}&page=0&offset=0&limit=20&fields=referenceRasterImageLink,id,type,url,contentType,contentHash,curatedContentType,mainGenres,subGenres,name,summary,country,sourceLink,contentLink,referenceImageLink,publicationDate,establishmentDate,rssFeeds,isbn,authors,publisher,serialNb,rate,isPremium`, {
       'headers': {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
@@ -180,6 +180,67 @@ const getFilteredContent = options => async dispatch => {
     }
   }
 };
+const getFilteredContentJson = options => async dispatch => {
+  const { data, onSuccess, onError,onLoading } = options;
+  try {
+
+    const { data: res } = await axios.post(`${APIModel.HOST}/filter/content`, data,{
+      onDownloadProgress: (progressEvent) => {
+        let percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+        if (onLoading) {
+          onLoading(percentCompleted);
+        }
+      },
+      'headers': {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      }
+    });
+    dispatch({
+      type: actions.GET_CONTENT_FILTER,
+      payload: res
+    });
+
+    if (onSuccess) {
+      onSuccess();
+    }
+  } catch (error) {
+    console.log(error);
+    const { data } = error.response;
+    const message = data.message || error.message || fallBackErrorMessage;
+
+    if (onError) {
+      onError(message);
+    }
+  }
+};
+const getFilteredWordDetails = options => async dispatch => {
+  const { data, onSuccess, onError } = options;
+  try {
+    const { data: res } = await axios.get(`${APIModel.HOST}/filter/sentences?word=${data.word}&contentId=${data.contentId}&filterLimit=${data.filterLimit}&sorting=${data.sorting}&url=${data.url}`,{
+      'headers': {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      }
+    });
+    dispatch({
+      type: actions.GET_CONTENT_FILTER_ITEM,
+      payload: res
+    });
+
+    if (onSuccess) {
+      onSuccess();
+    }
+  } catch (error) {
+    console.log(error);
+    const { data } = error.response;
+    const message = data.message || error.message || fallBackErrorMessage;
+
+    if (onError) {
+      onError(message);
+    }
+  }
+};
 const forgotPassword = options => async () => {
   const {  onSuccess, onError } = options;
   try {
@@ -236,24 +297,24 @@ const syncWithAsyncStorage = options => async dispatch => {
 };
 
 const logout = options => async (dispatch) => {
-  const { onSuccess, onError, token } = options;
+  const { onSuccess, onError } = options;
   try {
 
 
-    const { data: { message } } = await axios.post(`${APIModel.HOST}/user/logout`, {}, {
-      'headers': {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
-    });
+    // const { data: { message } } = await axios.post(`${APIModel.HOST}/user/logout`, {}, {
+    //   'headers': {
+    //     'Content-Type': 'application/json',
+    //     'Accept': 'application/json',
+    //     'Authorization': `Bearer ${token}`
+    //   }
+    // });
 
     dispatch({
       type: actions.LOGOUT,
     });
 
     if (onSuccess) {
-      onSuccess(message);
+      onSuccess('Logout Successfully');
     }
   } catch (error) {
     const { data } = error.response;
@@ -264,4 +325,4 @@ const logout = options => async (dispatch) => {
     }
   }
 };
-export { register, logout, login, forgotPassword,syncWithAsyncStorage ,getContent,getContentRss,getFilteredContent};
+export { register, logout, login, forgotPassword,syncWithAsyncStorage ,getContent,getContentRss,getFilteredContent,getFilteredContentJson,getFilteredWordDetails};

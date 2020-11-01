@@ -8,6 +8,7 @@ function setNavigator(nav) {
   }
 }
 
+
 function navigate(routeName, params) {
   if (config.navigator && routeName) {
     let action = NavigationActions.navigate({ routeName, params });
@@ -44,5 +45,5 @@ export {
   navigate,
   setNavigator,
   goBack,
-  navigateAndResetStack,
+  navigateAndResetStack
 };

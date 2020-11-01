@@ -1,10 +1,12 @@
 import * as actions from "../Actions/type";
 import { AsyncStorage } from 'react-native';
-
+import {Audio} from 'expo-av';
 const initSate = {
     searches: undefined,
     searchItem: undefined,
-    savedContent: undefined
+    savedContent: undefined,
+    audioUrl: undefined,
+    wordInfo: undefined
 };
 
 const ContentReducer = (state = initSate, action) => {
@@ -19,7 +21,7 @@ const ContentReducer = (state = initSate, action) => {
             };
         }
         case actions.GET_CONTENT_SEARCH_DETAILS: {
-            const item = action.payload.results[0]
+            const item = action.payload.results[0].content
             // AsyncStorage.setItem('statics', JSON.stringify(statics));
             return {
                 ...state,
@@ -31,6 +33,18 @@ const ContentReducer = (state = initSate, action) => {
             return {
                 ...state,
                 savedContent:[...action.payload],
+            };
+        }
+        case actions.GET_CONTENT_AUDIO: {
+            return {
+                ...state,
+                audioUrl:action.payload,
+            };
+        }
+        case actions.GET_WORDS_INFO: {
+            return {
+                ...state,
+                wordInfo:action.payload,
             };
         }
         default: {
